@@ -1,9 +1,11 @@
 package com.e_val.e_Val.service;
 
-import com.eval.model.User;
-import com.eval.model.dto.*;
-import com.eval.model.enums.Role;
-import com.eval.repository.UserRepository;
+import com.e_val.e_Val.model.User;
+import com.e_val.e_Val.model.dto.*;
+import com.e_val.e_Val.model.enums.Role;
+import com.e_val.e_Val.repository.UserRepository;
+import com.e_val.e_Val.utils.JwtUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

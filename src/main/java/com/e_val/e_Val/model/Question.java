@@ -1,10 +1,19 @@
 package com.e_val.e_Val.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import javax.persistence.*;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+import jakarta.persistence.*;
+
+import com.e_val.e_Val.model.enums.QuestionType;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

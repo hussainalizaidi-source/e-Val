@@ -1,12 +1,27 @@
 package com.e_val.e_Val.model;
 
 import com.e_val.e_Val.model.enums.Role;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import javax.persistence.*;
+import lombok.NoArgsConstructor;
+
+import java.util.Collection;
+import java.util.List;
+
+import jakarta.persistence.*; // Use jakarta.persistence.* (not javax)
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Data
-public class User {
+@Builder // Add this
+@NoArgsConstructor // Add this
+@AllArgsConstructor // Add this
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
@@ -18,4 +33,33 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email; // Use email as the username
+    }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
