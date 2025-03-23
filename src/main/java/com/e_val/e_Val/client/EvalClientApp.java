@@ -20,8 +20,9 @@ public class EvalClientApp extends Application {
 
         // Load JavaFX UI
         Parent root = FXMLLoader.load(getClass().getResource("/client/views/login.fxml"));
-        primaryStage.setTitle("e-Val Login");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setTitle("EQuiz - JavaFX & Spring Boot");
+        primaryStage.setScene(new Scene(root, 1280, 720));
+        primaryStage.setResizable(true);
         primaryStage.show();
     }
 

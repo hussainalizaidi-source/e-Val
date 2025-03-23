@@ -6,13 +6,43 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400" prefWidth="600" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.e_val.e_Val.client.controllers.LoginController">
-    <Text layoutX="250" layoutY="100" text="e-Val Login">
-        <font>
-            <Font size="20" />
-        </font>
-    </Text>
-    <TextField fx:id="emailField" layoutX="200" layoutY="150" promptText="Email" />
-    <PasswordField fx:id="passwordField" layoutX="200" layoutY="200" promptText="Password" />
-    <Button fx:id="loginButton" layoutX="250" layoutY="250" text="Login" onAction="#handleLogin" />
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+            prefHeight="708.0" prefWidth="1280.0" 
+            style="-fx-background-image: url('/client/views/img/bg.gif');
+                   -fx-background-repeat: no-repeat;
+                   -fx-background-size: cover;
+                   -fx-background-position: center;" 
+            xmlns="http://javafx.com/javafx/21" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.e_val.e_Val.client.controllers.LoginController">
+   <!-- Rest of your components remain unchanged -->
+   <children>
+      <Button fx:id="Log" layoutX="828.0" layoutY="351.0" mnemonicParsing="false" onAction="#LogPress" prefHeight="25.0" prefWidth="124.0" text="Log In">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <Button fx:id="Reg" layoutX="828.0" layoutY="483.0" mnemonicParsing="false" onAction="#RegPress" prefHeight="39.0" prefWidth="124.0" text="Sign Up">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <Text layoutX="767.0" layoutY="205.0" smooth="false" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="769.0" layoutY="279.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="756.0" layoutY="455.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Don't have an account? Register Now!">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <TextField fx:id="Field1" layoutX="763.0" layoutY="221.0" prefHeight="25.0" prefWidth="254.0" />
+      <TextField fx:id="Field2" layoutX="763.0" layoutY="292.0" prefHeight="25.0" prefWidth="254.0" />
+   </children>
 </AnchorPane>
