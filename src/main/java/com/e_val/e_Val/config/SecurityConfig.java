@@ -28,19 +28,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
+            .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/quizzes/**").hasRole("TEACHER")
+                .requestMatchers("/", "/login.html", "/register.html", 
+                               "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login.html")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login.html")
+                .permitAll()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
