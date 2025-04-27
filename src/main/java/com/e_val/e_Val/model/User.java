@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.*; // Use jakarta.persistence.* (not javax)
+import jakarta.validation.constraints.Email;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +28,9 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(unique = true)
+    private String name; // Full name of the user
+    @Column(unique = true)
+    @Email
     private String email;
     private String password;
     private String resetToken;
@@ -39,6 +43,10 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    public String getName() {
+        return name; // Use name as the display name
+    }
+    
     @Override
     public String getUsername() {
         return email; // Use email as the username

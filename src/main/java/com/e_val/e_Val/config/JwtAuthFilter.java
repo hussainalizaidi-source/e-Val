@@ -37,7 +37,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
-
+        // Skip filter for permitted endpoints
+        if (isPermittedEndpoint(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -57,5 +61,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPermittedEndpoint(HttpServletRequest request) {
+        String path = request.getServletPath();
+        String method = request.getMethod();
+        
+        // Permit all static resources
+        if (path.startsWith("/css/") || 
+            path.startsWith("/js/") || 
+            path.startsWith("/images/") ||
+            path.endsWith(".html")) {
+            return true;
+        }
+        
+        // Permit auth endpoints
+        if (path.startsWith("/auth/") && ("POST".equals(method) || "OPTIONS".equals(method))) {
+            return true;
+        }
+        
+        // Permit preflight requests
+        if ("OPTIONS".equals(method)) {
+            return true;
+        }
+        
+        // Permit specific pages
+        return "/login.html".equals(path) || 
+               "/register.html".equals(path) || 
+               "/".equals(path);
     }
 }
