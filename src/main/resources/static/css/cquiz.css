@@ -1,0 +1,150 @@
+/* cquiz.css */
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container */
+.quiz-maker-container {
+    background: white;
+    padding: 2rem 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Title */
+.quiz-title {
+    font-size: 2rem;
+    color: #1a73e8;
+    margin-bottom: 2rem;
+}
+
+/* Input Fields */
+.input-field {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border: 2px solid #c9c5c5;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-field:focus {
+    border-color: #1a73e8;
+}
+
+/* Custom dropdown options */
+.input-field option {
+    padding: 0.5rem;
+    background: white;
+    color: #333;
+}
+
+/* New Add-to-DB Button Container */
+.add-to-db-quiz {
+    margin: 1rem 0; /* Space above and below the Add button */
+    display: flex;
+    justify-content: center; /* Center the button horizontally */
+}
+
+/* Add-to-DB Button Specific Styling */
+#addToDBQuizBtn {
+    background-color: #fbbc05; /* Attractive yellow */
+    color: #ffffff;
+    font-weight: bold;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Hover effect for better UX */
+#addToDBQuizBtn:hover {
+    background-color: #e0a800; /* Darker yellow on hover */
+    transform: translateY(-2px);
+}
+
+/* Question Type Section */
+.question-type-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.question-type {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 0.5rem;
+}
+
+/* Radio Buttons */
+.question-type input[type="radio"] {
+    accent-color: #1a73e8;
+    width: 18px;
+    height: 18px;
+}
+
+/* Buttons */
+.action-button {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    background-color: #1a73e8;
+    color: white;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.action-button:hover {
+    background-color: #1558b0;
+    transform: translateY(-2px);
+}
+
+/* Finalize Button Different Color */
+.finalize-btn {
+    background-color: #34a853;
+}
+
+.finalize-btn:hover {
+    background-color: #2b8545;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .quiz-maker-container {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .input-field {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.95rem;
+    }
+}
