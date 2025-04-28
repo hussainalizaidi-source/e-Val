@@ -215,6 +215,11 @@ body {
     width: 24px;
     height: 24px;
     object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  .signout-btn:hover .signout-icon {
+    transform: rotate(360deg);
   }
 
   .noti-icon {
