@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teacher Dashboard with Sidebar</title>
+    <link rel="stylesheet" href="/css/tdboard.css">
+</head>
+
+<body>
+
+<header>
+  <div class="profile-container">
+    <img src="/css/IMG-20220418-WA0002.jpg" alt="Profile Picture" class="profile-pic">
+    <div class="teacher-info">
+      <h2>John Doe</h2>
+    </div>
+  </div>
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Search...">
+    <button class="search-button">🔍</button>
+  </div>
+  <a href="notification_center.html" class="notification-btn"><img src="/css/gear.png" alt="Notifications" class="noti-icon" ></a>
+</header>
+
+
+
+<div class="main-content">
+  <div class="sidebar" id="sidebar">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="logo-container">
+      <h1 class="logo-text" id="logoText">E-Val</h1>
+    </div>
+    <div>
+      
+      <div class="clock" id="clock">00:00:00</div>
+
+      <div class="class-box" onclick="toggleDetails(this)">
+        <strong>Math Class</strong>
+        <div class="class-details">
+          <p>Class ID: MATH123</p>
+          <button class="show-all-btn">Show All</button>
+        </div>
+      </div>
+
+      <div class="class-box" onclick="toggleDetails(this)">
+        <strong>Science Class</strong>
+        <div class="class-details">
+          <p>Class ID: SCI456</p>
+          <button class="show-all-btn">Show All</button>
+        </div>
+      </div>
+
+      <div class="class-box" onclick="toggleDetails(this)">
+        <strong>History Class</strong>
+        <div class="class-details">
+          <p>Class ID: HIST789</p>
+          <button class="show-all-btn">Show All</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="signout-btn" onclick="signOut()">
+      <img src="/css/power-off.png" alt="Sign Out" class="signout-icon" >
+    </button>
+  </div>
+
+  <section class="dashboard-content">
+    <div class="grid-button" onclick="location.href='create_quiz.html'">Create Quiz</div>
+    <div class="grid-button" onclick="location.href='assign_quiz.html'">Assign Quiz</div>
+    <div class="grid-button" onclick="location.href='upload_material.html'">Upload Material</div>
+    <div class="grid-button" onclick="location.href='assign_students.html'">Assign Students</div>
+    <div class="grid-button" onclick="location.href='view_results.html'">View Results</div>
+    <div class="grid-button" onclick="location.href='class_progress.html'">Class Progress</div>
+    <div class="grid-button" onclick="location.href='marking_criteria.html'">Marking Criteria</div>
+    <div class="grid-button" onclick="location.href='edit_profile.html'">Edit Profile</div>
+  </section>
+</div>
+
+<script>
+  // Live Clock
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Expand/Collapse Class Details
+  function toggleDetails(box) {
+    const details = box.querySelector('.class-details');
+    const isVisible = details.style.display === 'block';
+    details.style.display = isVisible ? 'none' : 'block';
+  }
+
+  // Collapse Sidebar
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const logoText = document.getElementById('logoText');
+    
+    sidebar.classList.toggle('collapsed');
+    
+    if (sidebar.classList.contains('collapsed')) {
+      logoText.textContent = 'EV';
+    } else {
+      logoText.textContent = 'E-Val';
+    }
+  }
+  
+
+  // Dummy SignOut function
+  function signOut() {
+    alert('Signing out...');
+    // Redirect or perform signout actions here
+  }
+
+  function showNotification(message, duration = 3000) {
+    const notification = document.getElementById('notificationBar');
+    notification.textContent = message;
+    notification.style.display = 'block';
+    
+    // Hide after 'duration' milliseconds
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, duration);
+  }
+  
+
+</script>
+
+</body>
+</html>
+

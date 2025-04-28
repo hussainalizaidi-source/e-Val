@@ -1,0 +1,263 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  header {
+    background: white;
+    padding: 0.5rem 1rem; 
+    border-bottom: 3px solid #1a73e8;
+    display: flex;
+    align-items: center; 
+    justify-content: left;
+    width: 97.6%;
+    margin: 0 auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
+  
+  .profile-container {
+    display: flex;
+    align-items: center; 
+    gap: 1rem; 
+  }
+  
+  .profile-pic {
+    width: 70px; 
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #1a73e8;
+    background: white;
+    object-fit: cover;
+  }
+  
+  .teacher-info h2 {
+    margin: 0;
+    color: #1a73e8;
+    font-size: 1.5rem;
+  }
+
+  .notification-btn {
+    position: absolute;
+    margin-top: 1rem;
+    right: 1.5rem;
+    background: #ffffff;
+    color: white;
+    padding: 0.6rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .notification-btn:hover {
+    background: #78797a;
+    transform: scale(1.1);
+  }    
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+
+    position: absolute;
+    right: 23rem;
+    width: 550px; /* You can adjust width */
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 2px solid #c9c5c5;
+    border-radius: 20px 0 0 20px;
+    outline: none;
+    font-size: 1rem;
+  }
+  
+  .search-button {
+    background: #f7f7f7;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0 25px 25px 0;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+  .search-button:hover {
+    background: #1558b0;
+  }
+  
+  
+  .main-content {
+    flex: 1;
+    display: flex;
+    height: 100%;
+  }
+
+  .sidebar {
+    background: white;
+    width: 200px;
+    transition: width 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    border-right: 1px solid #ddd;
+    overflow-x: hidden;
+  }
+
+  .sidebar.collapsed {
+    width: 30px;
+  }
+
+  .toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    align-self: flex-end;
+    color: #1a73e8;
+  }
+
+  .toggle-btn:hover {
+    color: white;
+    background: #1558b0;
+    border-radius: 50%;
+    transform: scale(1.1);
+  }
+
+  .logo-container {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .logo-text {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1a73e8;
+    margin: 0;
+  }
+  
+
+  .clock {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #1a73e8;
+    margin-bottom: 2rem;
+    white-space: nowrap;
+  }
+
+  .class-box {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    color: #1a73e8;
+  }
+
+  .class-box:hover {
+    background: #1a73e8;
+    color: white;
+  }
+
+  .class-details {
+    display: none;
+    margin-top: 0.5rem;
+  }
+
+  .show-all-btn {
+    margin-top: 0.5rem;
+    background: #1a73e8;
+    color: white;
+    padding: 0.3rem 0.7rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .show-all-btn:hover {
+    background: #1558b0;
+  }
+
+  .signout-btn {
+    margin-top: 2rem;
+    background: #f9f9f9;
+    color: white;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 50%; /* <-- Makes it perfectly round */
+    cursor: pointer;
+    width: 40px; /* <-- smaller width */
+    height: 40px; /* <-- height same as width for circle */
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: center; /* center it horizontally inside sidebar */
+    transition: background 0.3s, width 0.3s, height 0.3s;
+  }
+  
+  .signout-btn:hover {
+    background: #e9e7e7;
+  }
+
+  .signout-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .noti-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+  
+  .dashboard-content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 2rem;
+    align-content: start;
+  }
+
+  .grid-button {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #1a73e8;
+    transition: background 0.3s, color 0.3s;
+    min-height: 100px;
+  }
+
+  .grid-button:hover {
+    background: #1a73e8;
+    color: white;
+  }
+
+  /* Hide text when sidebar collapsed */
+  .sidebar.collapsed .class-box strong,
+  .sidebar.collapsed .class-details,
+  .sidebar.collapsed .clock,
+  .sidebar.collapsed .show-all-btn {
+    display: none;
+  }
