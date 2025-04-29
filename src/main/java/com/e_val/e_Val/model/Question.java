@@ -18,17 +18,22 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String text;
-
+    
+    private String questionText;
+    private Integer marks;
+    
     @Enumerated(EnumType.STRING)
     private QuestionType type;
-
+    
+    // For MCQ
     @ElementCollection
     private List<String> options;
-
+    private Integer correctOptionIndex;
+    
+    // For Short/Numerical
     private String correctAnswer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 }

@@ -7,36 +7,35 @@
     <link rel="stylesheet" href="/css/cquiz.css">
 </head>
 <body>
+    <div class="quiz-maker-container">
+        <h2 class="quiz-title">Add Short Question</h2>
 
-<div class="quiz-maker-container">
-    <h2 class="quiz-title">Add Short Question</h2>
+        <textarea class="input-field" placeholder="Enter Question (multi-line supported)" id="shortQuestionText" rows="4" required></textarea>
+        <textarea class="input-field" placeholder="Correct Answer (multi-line supported)" id="shortAnswer" rows="3" required></textarea>
+        <input type="number" class="input-field" placeholder="Enter Marks" id="shortMarks" min="1" required>
 
-    <textarea class="input-field" placeholder="Enter Question (multi-line supported)" id="shortQuestionText" rows="4" required></textarea>
+        <button class="action-button" id="addShortBtn">Add Short Question</button>
+    </div>
 
-    <textarea class="input-field" placeholder="Correct Answer (multi-line supported)" id="shortAnswer" rows="3" required></textarea>
+    <script>
+        document.getElementById('addShortBtn').addEventListener('click', function () {
+            const questionText = document.getElementById('shortQuestionText').value;
+            const answerText = document.getElementById('shortAnswer').value;
+            const marks = document.getElementById('shortMarks').value;
 
-    <input type="number" class="input-field" placeholder="Enter Marks" id="shortMarks" min="1" required>
-
-    <button class="action-button" id="addShortBtn">Add Short Question</button>
-</div>
-
-<script>
-    document.getElementById('addShortBtn').addEventListener('click', function () {
-        // Get values of the input fields
-        const questionText = document.getElementById('shortQuestionText').value;
-        const answerText = document.getElementById('shortAnswer').value;
-        const marks = document.getElementById('shortMarks').value;
-
-        // Check if all fields are filled
-        if (questionText && answerText && marks) {
-            // Clear the iframe or perform any other necessary action
-            window.parent.document.getElementById('questionFrame').src = '';
-        } else {
-            // Alert the user to fill all fields
-            alert('Please fill in all the fields.');
-        }
-    });
-</script>
-
+            if (questionText && answerText && marks) {
+                const questionData = {
+                    type: 'SHORT',
+                    questionText: questionText,
+                    correctAnswer: answerText,
+                    marks: parseInt(marks)
+                };
+                window.parent.addQuestionToQuiz(questionData);
+                window.parent.document.getElementById('questionFrame').src = '';
+            } else {
+                alert('Please fill in all the fields.');
+            }
+        });
+    </script>
 </body>
 </html>

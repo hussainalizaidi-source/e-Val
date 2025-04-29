@@ -11,38 +11,46 @@
             flex-direction: row;
             justify-content: space-between;
         }
-
         .quiz-maker-container {
             width: 40%;
             padding: 50px;
             margin-left: 60px;
         }
-
         .iframe-container {
             width: 50%;
             padding: 20px;
             border-left: 1px solid #ccc;
         }
-
         iframe {
             width: 100%;
             height: 650px;
             border: none;
         }
+        #questionsList {
+            margin-top: 20px;
+        }
+        #questionsList div {
+            margin-bottom: 10px;
+        }
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-
     <div class="quiz-maker-container">
         <h1 class="quiz-title">Quiz Maker</h1>
 
-        <input type="text" class="input-field" placeholder="Quiz Name" id="quizName">
-
-        <select class="input-field" id="examOrQuiz">
+        <input type="text" class="input-field" placeholder="Quiz Name" id="quizName" required>
+        <select class="input-field" id="examOrQuiz" required>
             <option value="" disabled selected>Exam or Quiz?</option>
             <option value="exam">Exam</option>
             <option value="quiz">Quiz</option>
         </select>
+        <input type="text" class="input-field" placeholder="Class" id="className" required>
+        <input type="text" class="input-field" placeholder="Section" id="section" required>
+        <input type="number" class="input-field" placeholder="Total Marks" id="totalMarks" min="1" required>
 
         <div class="question-type-section">
             <label class="question-type">
@@ -61,18 +69,35 @@
 
         <button class="action-button" id="addQuestionBtn">Add Question</button>
 
+        <div id="questionsList"></div>
+
         <button class="action-button finalize-btn" id="finalizeQuizBtn">Finalize</button>
+        <div id="errorMessage"></div>
     </div>
 
     <div class="iframe-container">
-        <iframe id="questionFrame" class="question-frame" style="width: 100%; height: 650px; border: none;"></iframe>
+        <iframe id="questionFrame" class="question-frame"></iframe>
     </div>
 
     <script>
+        let questions = [];
+
+        function addQuestionToQuiz(questionData) {
+            questions.push(questionData);
+            console.log('Question added:', questionData);
+            // Update UI to show added questions
+            const questionsList = document.getElementById('questionsList');
+            const questionDiv = document.createElement('div');
+            questionDiv.textContent = `${questionData.type}: ${questionData.questionText} (Marks: ${questionData.marks})`;
+            questionsList.appendChild(questionDiv);
+        }
+
         const questionTypeRadios = document.getElementsByName("questionType");
         const addQuestionBtn = document.getElementById("addQuestionBtn");
         const questionFrame = document.getElementById("questionFrame");
-    
+        const finalizeQuizBtn = document.getElementById("finalizeQuizBtn");
+        const errorMessageDiv = document.getElementById("errorMessage");
+
         addQuestionBtn.addEventListener("click", function () {
             let selectedType = null;
             for (let radio of questionTypeRadios) {
@@ -81,7 +106,6 @@
                     break;
                 }
             }
-    
             if (selectedType === "mcq") {
                 questionFrame.src = "mcq.html";
             } else if (selectedType === "short") {
@@ -90,7 +114,95 @@
                 questionFrame.src = "numerical.html";
             }
         });
-    </script>
 
+        function validateQuizData(quizData) {
+            const errors = [];
+            if (!quizData.title) errors.push("Quiz name is required.");
+            if (!quizData.quizType) errors.push("Quiz type (exam/quiz) is required.");
+            if (!quizData.className) errors.push("Class name is required.");
+            if (!quizData.section) errors.push("Section is required.");
+            if (!quizData.totalMarks || quizData.totalMarks <= 0) errors.push("Total marks must be a positive number.");
+            if (!quizData.questions || quizData.questions.length === 0) errors.push("At least one question is required.");
+
+            quizData.questions.forEach((q, index) => {
+                if (!q.questionText) errors.push(`Question ${index + 1}: Question text is required.`);
+                if (!q.marks || q.marks <= 0) errors.push(`Question ${index + 1}: Marks must be a positive number.`);
+                if (q.type === "MCQ") {
+                    if (!q.options || q.options.length !== 4) errors.push(`Question ${index + 1}: MCQ must have exactly 4 options.`);
+                    if (q.correctOptionIndex == null || q.correctOptionIndex < 0 || q.correctOptionIndex > 3) {
+                        errors.push(`Question ${index + 1}: Valid correct option index (0-3) is required.`);
+                    }
+                } else if (q.type === "SHORT" || q.type === "NUMERICAL") {
+                    if (!q.correctAnswer) errors.push(`Question ${index + 1}: Correct answer is required.`);
+                } else {
+                    errors.push(`Question ${index + 1}: Invalid question type.`);
+                }
+            });
+
+            return errors;
+        }
+
+        finalizeQuizBtn.addEventListener("click", async function () {
+            const quizName = document.getElementById("quizName").value;
+            const examOrQuiz = document.getElementById("examOrQuiz").value;
+            const className = document.getElementById("className").value;
+            const section = document.getElementById("section").value;
+            const totalMarks = document.getElementById("totalMarks").value;
+
+            const quizData = {
+                title: quizName,
+                quizType: examOrQuiz,
+                className: className,
+                section: section,
+                totalMarks: parseInt(totalMarks),
+                questions: questions
+            };
+
+            // Validate data
+            const validationErrors = validateQuizData(quizData);
+            if (validationErrors.length > 0) {
+                errorMessageDiv.textContent = "Validation errors:\n" + validationErrors.join("\n");
+                console.error("Validation errors:", validationErrors);
+                return;
+            }
+
+            // Log the payload for debugging
+            console.log("Sending quiz data:", JSON.stringify(quizData, null, 2));
+
+            try {
+                const response = await fetch('/api/quizzes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token') // Adjust based on your auth setup
+                    },
+                    body: JSON.stringify(quizData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Server response:", errorData);
+                    errorMessageDiv.textContent = `Failed to create quiz: ${errorData.message || response.statusText}`;
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Quiz created successfully:', data);
+                errorMessageDiv.textContent = '';
+                alert('Quiz successfully created!');
+                // Reset form
+                document.getElementById("quizName").value = '';
+                document.getElementById("examOrQuiz").value = '';
+                document.getElementById("className").value = '';
+                document.getElementById("section").value = '';
+                document.getElementById("totalMarks").value = '';
+                questions = [];
+                document.getElementById("questionsList").innerHTML = '';
+            } catch (error) {
+                console.error('Error creating quiz:', error);
+                errorMessageDiv.textContent = `Failed to create quiz: ${error.message}`;
+            }
+        });
+    </script>
 </body>
 </html>

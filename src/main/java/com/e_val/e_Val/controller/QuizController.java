@@ -3,6 +3,7 @@ package com.e_val.e_Val.controller;
 
 import com.e_val.e_Val.model.Quiz;
 import com.e_val.e_Val.model.User;
+import com.e_val.e_Val.model.dto.QuizCreationRequest;
 import com.e_val.e_Val.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ public class QuizController {
 
     @PostMapping
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz, 
-                                          @AuthenticationPrincipal User teacher) {
-        return ResponseEntity.ok(quizService.createQuiz(quiz, teacher.getEmail()));
+    public ResponseEntity<Quiz> createQuiz(@RequestBody QuizCreationRequest request,
+                                         @AuthenticationPrincipal User teacher) {
+        return ResponseEntity.ok(quizService.createQuiz(request, teacher.getEmail()));
     }
 
     @PatchMapping("/{quizId}/publish")

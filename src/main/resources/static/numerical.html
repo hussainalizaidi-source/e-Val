@@ -7,33 +7,35 @@
     <link rel="stylesheet" href="/css/cquiz.css">
 </head>
 <body>
+    <div class="quiz-maker-container">
+        <h2 class="quiz-title">Add Numerical Question</h2>
 
-<div class="quiz-maker-container">
-    <h2 class="quiz-title">Add Numerical Question</h2>
+        <textarea class="input-field" placeholder="Enter Question (multi-line supported)" id="numericalQuestionText" rows="4" required></textarea>
+        <input type="text" class="input-field" placeholder="Answer" id="numericalAnswer" required>
+        <input type="number" class="input-field" placeholder="Enter Marks" id="numericalMarks" min="1" required>
 
-    <textarea class="input-field" placeholder="Enter Question (multi-line supported)" id="numericalQuestionText" rows="4" required></textarea>
+        <button class="action-button" id="addNumericalBtn">Add Numerical Question</button>
+    </div>
 
-    <input type="text" class="input-field" placeholder="Answer" id="numericalAnswer" required>
+    <script>
+        document.getElementById('addNumericalBtn').addEventListener('click', function () {
+            const questionText = document.getElementById('numericalQuestionText').value;
+            const answer = document.getElementById('numericalAnswer').value;
+            const marks = document.getElementById('numericalMarks').value;
 
-    <input type="number" class="input-field" placeholder="Enter Marks" id="numericalMarks" min="1" required>
-
-    <button class="action-button" id="addNumericalBtn">Add Numerical Question</button>
-</div>
-
-<script>
-    document.getElementById('addNumericalBtn').addEventListener('click', function() {
-        // Optional: Add validation logic here (if needed)
-        const questionText = document.getElementById('numericalQuestionText').value;
-        const answer = document.getElementById('numericalAnswer').value;
-        const marks = document.getElementById('numericalMarks').value;
-
-        if (questionText && answer && marks) {
-            window.parent.document.getElementById('questionFrame').src = '';
-        } else {
-            alert('Please fill in all the fields.');
-        }
-    });
-</script>
-
+            if (questionText && answer && marks) {
+                const questionData = {
+                    type: 'NUMERICAL',
+                    questionText: questionText,
+                    correctAnswer: answer,
+                    marks: parseInt(marks)
+                };
+                window.parent.addQuestionToQuiz(questionData);
+                window.parent.document.getElementById('questionFrame').src = '';
+            } else {
+                alert('Please fill in all the fields.');
+            }
+        });
+    </script>
 </body>
 </html>

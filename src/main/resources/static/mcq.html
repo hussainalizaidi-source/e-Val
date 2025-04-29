@@ -7,49 +7,50 @@
     <link rel="stylesheet" href="/css/cquiz.css">
 </head>
 <body>
+    <div class="quiz-maker-container">
+        <h2 class="quiz-title">Add MCQ Question</h2>
 
-<div class="quiz-maker-container">
-    <h2 class="quiz-title">Add MCQ Question</h2>
+        <input type="text" class="input-field" placeholder="Enter Question" id="questionText" required>
+        <input type="text" class="input-field" placeholder="Option 1" id="option1" required>
+        <input type="text" class="input-field" placeholder="Option 2" id="option2" required>
+        <input type="text" class="input-field" placeholder="Option 3" id="option3" required>
+        <input type="text" class="input-field" placeholder="Option 4" id="option4" required>
+        <select class="input-field" id="correctOption" required>
+            <option value="" disabled selected>Select Correct Answer</option>
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <option value="3">Option 3</option>
+            <option value="4">Option 4</option>
+        </select>
+        <input type="number" class="input-field" placeholder="Enter Marks" id="mcqMarks" min="1" required>
 
-    <input type="text" class="input-field" placeholder="Enter Question" id="questionText" required>
+        <button class="action-button" id="addMcqBtn">Add MCQ</button>
+    </div>
 
-    <input type="text" class="input-field" placeholder="Option 1" id="option1" required>
-    <input type="text" class="input-field" placeholder="Option 2" id="option2" required>
-    <input type="text" class="input-field" placeholder="Option 3" id="option3" required>
-    <input type="text" class="input-field" placeholder="Option 4" id="option4" required>
+    <script>
+        document.getElementById('addMcqBtn').addEventListener('click', function () {
+            const questionText = document.getElementById('questionText').value;
+            const option1 = document.getElementById('option1').value;
+            const option2 = document.getElementById('option2').value;
+            const option3 = document.getElementById('option3').value;
+            const option4 = document.getElementById('option4').value;
+            const correctOption = document.getElementById('correctOption').value;
+            const marks = document.getElementById('mcqMarks').value;
 
-    <select class="input-field" id="correctOption" required>
-        <option value="" disabled selected>Select Correct Answer</option>
-        <option value="1">Option 1</option>
-        <option value="2">Option 2</option>
-        <option value="3">Option 3</option>
-        <option value="4">Option 4</option>
-    </select>
-
-    <button class="action-button" id="addMcqBtn">Add MCQ</button>
-</div>
-
-<script>
-    document.getElementById('addMcqBtn').addEventListener('click', function () {
-        // Get values of the input fields
-        const questionText = document.getElementById('questionText').value;
-        const option1 = document.getElementById('option1').value;
-        const option2 = document.getElementById('option2').value;
-        const option3 = document.getElementById('option3').value;
-        const option4 = document.getElementById('option4').value;
-        const correctOption = document.getElementById('correctOption').value;
-
-        // Check if all fields are filled
-        if (questionText && option1 && option2 && option3 && option4 && correctOption) {
-            // Clear iframe AFTER a short delay to allow submission if needed
-            setTimeout(() => {
+            if (questionText && option1 && option2 && option3 && option4 && correctOption && marks) {
+                const questionData = {
+                    type: 'MCQ',
+                    questionText: questionText,
+                    options: [option1, option2, option3, option4],
+                    correctOptionIndex: parseInt(correctOption) - 1, // Convert to 0-based index
+                    marks: parseInt(marks)
+                };
+                window.parent.addQuestionToQuiz(questionData);
                 window.parent.document.getElementById('questionFrame').src = '';
-            }, 100); // slight delay is safer
-        } else {
-            alert('Please fill in all fields.');
-        }
-    });
-</script>
-
+            } else {
+                alert('Please fill in all fields.');
+            }
+        });
+    </script>
 </body>
 </html>
