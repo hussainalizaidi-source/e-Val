@@ -1,21 +1,15 @@
 package com.e_val.e_Val.config;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,19 +20,21 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
-    private final UserDetailsService userDetailsService; // Inject the UserDetailsService
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(withDefaults())
-            .csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions().disable())
             .authorizeHttpRequests(auth -> auth
                 // Permit static resources
@@ -52,6 +48,7 @@ public class SecurityConfig {
                     "/createQuiz.html",
                     "/numerical.html",
                     "/short.html",
+                    "/institution.html",
                     "/assignquiz.html",
                     "/upload.html",
                     "/assignstudent.html",
@@ -60,23 +57,19 @@ public class SecurityConfig {
                     "/js/**",
                     "/images/**"
                 ).permitAll()
-                
                 // Permit auth endpoints
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                
                 // Permit pre-flight requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/teacher/**").hasRole("TEACHER")  // Add teacher-specific paths   
-                .requestMatchers("/student/**").hasRole("STUDENT")  // Add student-specific paths
+                // Role-based access
+                .requestMatchers("/teacher/**").hasRole("TEACHER")
+                .requestMatchers("/student/**").hasRole("STUDENT")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                // Secure all other endpoints
+                .requestMatchers("/api/classes/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login.html")
-                //.loginProcessingUrl("/auth/login")
-                //.successHandler(roleBasedAuthenticationSuccessHandler())  // Add this
                 .permitAll()
             )
             .logout(logout -> logout
@@ -90,20 +83,17 @@ public class SecurityConfig {
 
         return http.build();
     }
-    private Customizer<CorsConfigurer<HttpSecurity>> withDefaults() {
-        return cors -> cors.configurationSource(corsConfigurationSource());
-    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration config
-    ) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -111,20 +101,17 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:8080",
-            "http://localhost:8080/login.html", 
-            "http://localhost:8080/register.html",
-            "http://localhost:8080/teacherdash.html",  // Add this
-            "http://localhost:8080/studentdash.html"  // Add this
-            
+            "http://localhost:3000" // Add frontend port if different
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);  // Add this for cookies if needed
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

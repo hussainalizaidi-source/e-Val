@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const payload = JSON.parse(atob(token.split('.')[1]));
                     switch(payload.role) {
                         case 'ADMIN':
-                            window.location.href = '/admindash.html';
+                            window.location.href = '/institution.html';
                             break;
                         case 'TEACHER':
                             window.location.href = '/teacherdash.html';
