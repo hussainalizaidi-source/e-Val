@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="/css/sdboard.css">
+</head>
+
+<body>
+
+<header>
+  <div class="profile-container">
+    <img src="/css/IMG-20220418-WA0002.jpg" alt="Profile Picture" class="profile-pic">
+    <div class="student-info">
+      <h2>Jane Doe</h2>
+    </div>
+  </div>
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Search...">
+    <button class="search-button">🔍</button>
+  </div>
+  <a href="notification_center.html" class="notification-btn" aria-label="Notifications">
+    <img src="/css/gear.png" alt="Notifications" class="noti-icon">
+    <span class="notification-count">3</span>
+  </a>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar">☰</button>
+  <div class="logo-container">
+    <h1 class="logo-text" id="logoText">E-Val</h1>
+  </div>
+
+  <div class="clock" id="clock">00:00:00</div>
+
+  <nav class="menu-section">
+    <div class="menu-list">
+      <a href="my_profile.html" class="menu-item">
+        <span class="menu-icon">🏠</span>
+        <span class="menu-text">My Profile</span>
+      </a>
+      <a href="edit_profile.html" class="menu-item">
+        <span class="menu-icon">✏️</span>
+        <span class="menu-text">Edit Profile</span>
+      </a>
+      <a href="available_classes.html" class="menu-item">
+        <span class="menu-icon">🔍</span>
+        <span class="menu-text">Available Classes</span>
+      </a>
+      <a href="my_classes.html" class="menu-item">
+        <span class="menu-icon">📚</span>
+        <span class="menu-text">My Classes</span>
+      </a>
+      <a href="lecture_materials.html" class="menu-item">
+        <span class="menu-icon">📄</span>
+        <span class="menu-text">Lecture Materials</span>
+      </a>
+      <a href="quiz_list.html" class="menu-item">
+        <span class="menu-icon">📝</span>
+        <span class="menu-text">Quizzes</span>
+      </a>
+      <a href="performance_tracker.html" class="menu-item">
+        <span class="menu-icon">📊</span>
+        <span class="menu-text">Performance</span>
+      </a>
+      <a href="notifications.html" class="menu-item">
+        <span class="menu-icon">🔔</span>
+        <span class="menu-text">Notifications</span>
+      </a>
+      <a href="private_chat.html" class="menu-item">
+        <span class="menu-icon">💬</span>
+        <span class="menu-text">Chat</span>
+      </a>
+    </div>
+  </nav>
+  <button class="signout-btn" onclick="signOut()" aria-label="Sign Out">
+    <img src="/css/power-off.png" alt="Sign Out" class="signout-icon">
+  </button>
+</aside>
+
+<main class="main-content">
+  <section class="dashboard-content">
+    <div class="grid-button" onclick="location.href='available_classes.html'">Browse Classes</div>
+    <div class="grid-button" onclick="location.href='my_classes.html'">My Classes</div>
+    <div class="grid-button" onclick="location.href='lecture_materials.html'">Lecture Materials</div>
+    <div class="grid-button" onclick="location.href='quiz_list.html'">Quizzes</div>
+    <div class="grid-button" onclick="location.href='performance_tracker.html'">Performance Tracker</div>
+    <div class="grid-button" onclick="location.href='notifications.html'">Notifications</div>
+    <div class="grid-button" onclick="location.href='private_chat.html'">Private Chat</div>
+    <div class="grid-button" onclick="location.href='edit_profile.html'">Edit Profile</div>
+  </section>
+</main>
+
+<script>
+// Live Clock
+function updateClock() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Collapse Sidebar
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const logoText = document.getElementById('logoText');
+  const mainContent = document.querySelector('.main-content');
+  
+  sidebar.classList.toggle('collapsed');
+  
+  if (sidebar.classList.contains('collapsed')) {
+    logoText.textContent = 'EV';
+    mainContent.classList.add('expanded');
+  } else {
+    logoText.textContent = 'E-Val';
+    mainContent.classList.remove('expanded');
+  }
+}
+
+// Dummy SignOut
+function signOut() {
+  alert('Signing out...');
+  // Redirect or perform signout actions here
+}
+</script>
+
+</body>
+</html>

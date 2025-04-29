@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quiz</title>
+    <link rel="stylesheet" href="/css/cquiz.css">
+</head>
+<body>
+
+    <div class="quiz-maker-container">
+        <h1 class="quiz-title">Quiz Maker</h1>
+
+        <input type="text" class="input-field" placeholder="Quiz Name" id="quizName">
+
+        <select class="input-field" id="examOrQuiz">
+            <option value="" disabled selected>Exam or Quiz?</option>
+            <option value="exam">Exam</option>
+            <option value="quiz">Quiz</option>
+        </select>
+
+        <div class="add-to-db-quiz"> 
+            <button class="action-button" id="addToDBQuizBtn">Add</button>
+        </div>
+
+        <div class="question-type-section">
+            <label class="question-type">
+                <input type="radio" name="questionType" value="mcq" checked>
+                MCQ
+            </label>
+            <label class="question-type">
+                <input type="radio" name="questionType" value="short">
+                Short
+            </label>
+            <label class="question-type">
+                <input type="radio" name="questionType" value="numerical">
+                Numerical
+            </label>
+        </div>
+
+        <button class="action-button" id="addQuestionBtn">Add Question</button>
+
+        <button class="action-button finalize-btn" id="finalizeQuizBtn">Finalize</button>
+    </div>
+
+</body>
+</html>

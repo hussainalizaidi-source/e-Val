@@ -46,6 +46,7 @@ public class SecurityConfig {
                     "/login.html",
                     "/register.html",
                     "/teacherdash.html",
+                    "/studentdash.html",
                     "/notifications.html",
                     "/css/**",
                     "/js/**",
@@ -109,7 +110,9 @@ public class SecurityConfig {
             "http://localhost:8080",
             "http://localhost:8080/login.html", 
             "http://localhost:8080/register.html",
-            "http://localhost:8080/teacherdash.html"  // Add this
+            "http://localhost:8080/teacherdash.html",  // Add this
+            "http://localhost:8080/studentdash.html"  // Add this
+            
         ));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
