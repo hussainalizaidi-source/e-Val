@@ -81,7 +81,10 @@
 
 <main class="main-content">
   <section class="dashboard-content">
-    <div class="grid-button" onclick="location.href='available_classes.html'">Browse Classes</div>
+    <div class="grid-button" onclick="showTimetable()">
+      <div class="grid-icon">📅</div>
+      <div class="grid-label">Timetable</div>
+  </div>
     <div class="grid-button" onclick="location.href='my_classes.html'">My Classes</div>
     <div class="grid-button" onclick="location.href='lecture_materials.html'">Lecture Materials</div>
     <div class="quiz-container">
@@ -109,6 +112,18 @@
     <div class="grid-button" onclick="location.href='edit_profile.html'">Edit Profile</div>
   </section>
 </main>
+
+<div id="timetableModal" class="modal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h2>Weekly Timetable</h2>
+          <button class="close-btn" onclick="closeTimetable()">&times;</button>
+      </div>
+      <div class="timetable-container" id="timetable">
+          <!-- Timetable will be generated here -->
+      </div>
+  </div>
+</div>
 
 <script>
 // Live Clock
@@ -160,6 +175,67 @@ const quizzes = [
     attempted: true
   }
 ];
+
+const timetableData = {
+  "Mon": [
+      { time: "09:00-10:30", subject: "Mathematics", room: "B-203", instructor: "Prof. Sharma" },
+      { time: "11:00-12:30", subject: "Physics", room: "Lab-3", instructor: "Dr. Gupta" }
+  ],
+  "Tue": [
+      { time: "10:00-11:30", subject: "Chemistry", room: "C-102", instructor: "Dr. Singh" }
+  ],
+  "Wed": [
+      { time: "09:30-11:00", subject: "Computer Science", room: "Comp Lab", instructor: "Ms. Kapoor" }
+  ],
+  "Thu": [
+      { time: "14:00-15:30", subject: "English", room: "A-301", instructor: "Mrs. Das" }
+  ],
+  "Fri": [
+      { time: "10:00-12:00", subject: "Mathematics", room: "B-203", instructor: "Prof. Sharma" }
+  ]
+};
+
+function showTimetable() {
+  const modal = document.getElementById('timetableModal');
+  modal.style.display = 'block';
+  generateTimetable();
+}
+
+function closeTimetable() {
+  document.getElementById('timetableModal').style.display = 'none';
+}
+
+function generateTimetable() {
+  const container = document.getElementById('timetable');
+  container.innerHTML = '';
+  
+  for (const [day, classes] of Object.entries(timetableData)) {
+      const dayColumn = document.createElement('div');
+      dayColumn.className = 'timetable-day';
+      dayColumn.innerHTML = `
+          <div class="timetable-header">${day}</div>
+          ${classes.map(cls => `
+              <div class="class-card">
+                  <div class="time-slot">${cls.time}</div>
+                  <div class="subject-name">${cls.subject}</div>
+                  <div class="class-details">
+                      ${cls.room}<br>
+                      ${cls.instructor}
+                  </div>
+              </div>
+          `).join('')}
+      `;
+      container.appendChild(dayColumn);
+  }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('timetableModal');
+  if (event.target === modal) {
+      closeTimetable();
+  }
+}
 
 function renderQuizzes(filter = 'all') {
   const quizList = document.getElementById('quizList');
@@ -214,6 +290,9 @@ function signOut() {
   alert('Signing out...');
   // Redirect or perform signout actions here
 }
+
+
+
 </script>
 
 </body>
