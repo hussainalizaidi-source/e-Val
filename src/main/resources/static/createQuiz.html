@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Quiz</title>
     <link rel="stylesheet" href="/css/cquiz.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .quiz-maker-container {
+            width: 40%;
+            padding: 50px;
+            margin-left: 60px;
+        }
+
+        .iframe-container {
+            width: 50%;
+            padding: 20px;
+            border-left: 1px solid #ccc;
+        }
+
+        iframe {
+            width: 100%;
+            height: 650px;
+            border: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,10 +43,6 @@
             <option value="exam">Exam</option>
             <option value="quiz">Quiz</option>
         </select>
-
-        <div class="add-to-db-quiz"> 
-            <button class="action-button" id="addToDBQuizBtn">Add</button>
-        </div>
 
         <div class="question-type-section">
             <label class="question-type">
@@ -42,6 +63,34 @@
 
         <button class="action-button finalize-btn" id="finalizeQuizBtn">Finalize</button>
     </div>
+
+    <div class="iframe-container">
+        <iframe id="questionFrame" class="question-frame" style="width: 100%; height: 650px; border: none;"></iframe>
+    </div>
+
+    <script>
+        const questionTypeRadios = document.getElementsByName("questionType");
+        const addQuestionBtn = document.getElementById("addQuestionBtn");
+        const questionFrame = document.getElementById("questionFrame");
+    
+        addQuestionBtn.addEventListener("click", function () {
+            let selectedType = null;
+            for (let radio of questionTypeRadios) {
+                if (radio.checked) {
+                    selectedType = radio.value;
+                    break;
+                }
+            }
+    
+            if (selectedType === "mcq") {
+                questionFrame.src = "mcq.html";
+            } else if (selectedType === "short") {
+                questionFrame.src = "short.html";
+            } else if (selectedType === "numerical") {
+                questionFrame.src = "numerical.html";
+            }
+        });
+    </script>
 
 </body>
 </html>

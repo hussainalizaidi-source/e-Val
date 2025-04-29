@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Material</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .upload-container {
+            max-width: 600px;
+            height: 400px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .upload-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #333;
+        }
+
+        .input-field, .select-field {
+            display: block;
+            width: 48%;
+            padding: 12px;
+            margin-bottom: 20px; /* Reduced margin between fields */
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            float: left;
+        }
+
+        .select-field {
+            margin-right: 4%;
+        }
+
+        .upload-options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px; /* Reduced space between upload options */
+        }
+
+        .upload-options label {
+            font-size: 16px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+            width: 45%; /* Increased width of buttons */
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-button {
+            background-color: #6c757d;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-container">
+        <h1 class="upload-title">Upload Material</h1>
+
+        <div class="upload-options">
+            <label>
+                <input type="radio" name="uploadType" value="courseMaterial" checked>
+                Course Material
+            </label>
+            <label>
+                <input type="radio" name="uploadType" value="lecture">
+                Lecture
+            </label>
+            <label>
+                <input type="radio" name="uploadType" value="demoSheet">
+                Demo Sheet
+            </label>
+            <label>
+                <input type="radio" name="uploadType" value="feedbackForm">
+                Feedback Form
+            </label>
+        </div>
+
+        <select class="select-field" id="classSelect">
+            <option value="" disabled selected>Select Class</option>
+            <option value="Math">Math</option>
+            <option value="Science">Science</option>
+            <option value="History">History</option>
+            <option value="All">All</option>
+        </select>
+
+        <select class="select-field" id="sectionSelect">
+            <option value="" disabled selected>Select Section</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select>
+
+        <input type="url" class="input-field" id="materialUrl" placeholder="Enter URL for the material">
+
+        <div class="button-container">
+            <button class="action-button back-button" id="backBtn">Back</button>
+            <button class="action-button" id="uploadBtn">Upload</button>
+        </div>
+    </div>
+
+    <script>
+        // Disable section select when "All" is chosen from class select
+        document.getElementById('classSelect').addEventListener('change', function () {
+            const selectedClass = this.value;
+            const sectionSelect = document.getElementById('sectionSelect');
+
+            if (selectedClass === 'All') {
+                sectionSelect.disabled = true; // Disable section selection
+            } else {
+                sectionSelect.disabled = false; // Enable section selection
+            }
+        });
+
+        document.getElementById('uploadBtn').addEventListener('click', function () {
+            const selectedClass = document.getElementById('classSelect').value;
+            const selectedSection = document.getElementById('sectionSelect').value;
+            const materialUrl = document.getElementById('materialUrl').value;
+
+            if (!selectedClass || (!selectedSection && selectedClass !== 'All') || !materialUrl) {
+                alert('Please select Class, Section (if applicable), and provide the URL.');
+                return;
+            }
+
+            const uploadType = document.querySelector('input[name="uploadType"]:checked').value;
+            alert(`Material Uploaded!\nType: ${uploadType}\nClass: ${selectedClass}\nSection: ${selectedSection}\nURL: ${materialUrl}`);
+        });
+
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = 'teacherdash.html';
+        });
+    </script>
+
+</body>
+</html>

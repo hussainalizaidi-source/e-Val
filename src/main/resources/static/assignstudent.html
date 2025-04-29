@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Student</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .assign-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .assign-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #333;
+        }
+
+        .input-field {
+            display: block;
+            width: 48%;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            float: left;
+        }
+
+        .input-field.full-width {
+            width: 100%; /* For the student roll number field */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+            width: 45%; /* To make buttons side by side */
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-button {
+            background-color: #6c757d;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+
+        .details-section {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .details-section p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .select-field {
+            display: block;
+            width: 48%;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="assign-container">
+        <h1 class="assign-title">Assign Student</h1>
+
+        <!-- Roll Number Input -->
+        <input type="text" class="input-field full-width" id="rollNumber" placeholder="Enter Roll Number">
+
+        <!-- Button Container with Search and Back Button -->
+        <div class="button-container">
+            <!-- Search Button -->
+            <button class="action-button" id="searchBtn">Search</button>
+            
+            <!-- Back Button -->
+            <button class="action-button back-button" id="backBtn">Back</button>
+        </div>
+
+        <!-- Student Details Section (Initially Hidden) -->
+        <div class="details-section" id="detailsSection">
+            <h3>Student Details:</h3>
+            <p id="studentName"></p>
+            <p id="studentEmail"></p>
+
+            <!-- Class and Section Select -->
+            <select class="select-field" id="classSelect">
+                <option value="" disabled selected>Select Class</option>
+                <option value="Math">Math</option>
+                <option value="Science">Science</option>
+                <option value="History">History</option>
+            </select>
+
+            <select class="select-field" id="sectionSelect">
+                <option value="" disabled selected>Select Section</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </select>
+
+            <!-- Assign Button -->
+            <button class="action-button" id="assignBtn">Assign</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulating fetching student details from the database based on roll number
+        function fetchStudentDetails(rollNumber) {
+            // Simulate fetching data from database (this would be an AJAX call in a real application)
+            const studentsDB = {
+                "0827": { name: "Muhammad Ali", email: "ali@example.com" },
+                "1234": { name: "John Doe", email: "john@example.com" }
+            };
+            return studentsDB[rollNumber] || null;
+        }
+
+        // Handle Search Button Click
+        document.getElementById('searchBtn').addEventListener('click', function () {
+            const rollNumber = document.getElementById('rollNumber').value;
+            if (!rollNumber) {
+                alert("Please enter a roll number.");
+                return;
+            }
+
+            const student = fetchStudentDetails(rollNumber);
+            if (student) {
+                document.getElementById('studentName').textContent = `Name: ${student.name}`;
+                document.getElementById('studentEmail').textContent = `Email: ${student.email}`;
+                document.getElementById('detailsSection').style.display = 'block'; // Show details section
+            } else {
+                alert("Student not found.");
+                document.getElementById('detailsSection').style.display = 'none'; // Hide details section
+            }
+        });
+
+        // Handle Assign Button Click
+        document.getElementById('assignBtn').addEventListener('click', function () {
+            const selectedClass = document.getElementById('classSelect').value;
+            const selectedSection = document.getElementById('sectionSelect').value;
+
+            if (!selectedClass || !selectedSection) {
+                alert("Please select both class and section.");
+                return;
+            }
+
+            alert(`Student Assigned!\nClass: ${selectedClass}\nSection: ${selectedSection}`);
+        });
+
+        // Handle Back Button Click
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = 'teacherdash.html'; // Go back to teacher dashboard or desired page
+        });
+    </script>
+
+</body>
+</html>

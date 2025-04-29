@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Quiz</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .assign-quiz-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .assign-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            color: #333;
+        }
+
+        .input-field {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 12px;
+            margin: 0 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-button {
+            background-color: #6c757d;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="assign-quiz-container">
+        <h1 class="assign-title">Assign Quiz</h1>
+
+        <select class="input-field" id="classSelect">
+            <option value="" disabled selected>Select Class</option>
+            <option value="Math">Math</option>
+            <option value="Science">Science</option>
+            <option value="History">History</option>
+        </select>
+
+        <select class="input-field" id="sectionSelect">
+            <option value="" disabled selected>Select Section</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select>
+
+        <input type="date" class="input-field" id="dueDate">
+
+        <div class="button-container">
+            <button class="action-button" id="assignBtn">Assign</button>
+            <button class="action-button back-button" id="backBtn">Back</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('assignBtn').addEventListener('click', function () {
+            const selectedClass = document.getElementById('classSelect').value;
+            const selectedSection = document.getElementById('sectionSelect').value;
+            const dueDate = document.getElementById('dueDate').value;
+
+            if (!selectedClass || !selectedSection || !dueDate) {
+                alert('Please select Class, Section, and Due Date.');
+                return;
+            }
+
+            alert(`Quiz Assigned!\nClass: ${selectedClass}\nSection: ${selectedSection}\nDue Date: ${dueDate}`);
+        });
+
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = 'teacherdash.html';
+        });
+    </script>
+
+</body>
+</html>
