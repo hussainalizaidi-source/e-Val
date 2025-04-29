@@ -37,7 +37,6 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions().disable())
             .authorizeHttpRequests(auth -> auth
-                // Permit static resources
                 .requestMatchers(
                     "/",
                     "/login.html",
@@ -52,20 +51,21 @@ public class SecurityConfig {
                     "/assignquiz.html",
                     "/upload.html",
                     "/assignstudent.html",
+                    "/assignteacher.html",
                     "/mcq.html",
                     "/css/**",
                     "/js/**",
                     "/images/**"
                 ).permitAll()
-                // Permit auth endpoints
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                // Permit pre-flight requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Role-based access
+                .requestMatchers(HttpMethod.GET, "/api/classes").hasAnyRole("ADMIN", "TEACHER")
+                .requestMatchers("/api/classes/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                .requestMatchers("/api/quizzes/**").hasRole("TEACHER")
                 .requestMatchers("/teacher/**").hasRole("TEACHER")
                 .requestMatchers("/student/**").hasRole("STUDENT")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/classes/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -107,9 +107,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:8080",
-            "http://localhost:3000" // Add frontend port if different
+            "http://localhost:3000"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

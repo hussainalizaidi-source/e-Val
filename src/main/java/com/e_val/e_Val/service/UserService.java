@@ -1,6 +1,7 @@
 package com.e_val.e_Val.service;
 
 import com.e_val.e_Val.model.User;
+import com.e_val.e_Val.model.enums.Role;
 import com.e_val.e_Val.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -8,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,5 +24,8 @@ public class UserService implements UserDetailsService {
     }
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    public List<User> findByRole(Role role) {
+        return userRepository.findByRole(role);
     }
 }

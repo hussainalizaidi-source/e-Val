@@ -444,10 +444,11 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
-                    body: JSON.stringify(teacherEmail)
+                    body: JSON.stringify(teacherEmail) // Send email directly as a JSON string
                 });
                 console.log('Assign teacher response status:', response.status);
                 const responseBody = await response.text();
+                console.log('Assign teacher raw response:', responseBody.substring(0, 500));
                 if (!response.ok) {
                     let errorMessage = responseBody;
                     try {

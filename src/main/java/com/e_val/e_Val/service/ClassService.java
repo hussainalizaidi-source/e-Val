@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,6 @@ public class ClassService {
     public ClassResponse createClass(ClassCreationRequest request, String adminEmail) {
         log.info("Creating class with name: {}, code: {}, adminEmail: {}", request.getName(), request.getCode(), adminEmail);
 
-        // Validate admin
         User admin = userRepository.findByEmail(adminEmail)
                 .filter(u -> u.getRole() == Role.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin not found or not authorized"));
@@ -39,11 +37,10 @@ public class ClassService {
         newClass.setSection(request.getSection());
         newClass.setMaxCapacity(request.getMaxCapacity());
 
-        // Assign teacher if provided
         if (request.getTeacherEmail() != null && !request.getTeacherEmail().isEmpty()) {
-            User teacher = userRepository.findByEmail(request.getTeacherEmail())
+            User teacher = userRepository.findByEmail(request.getTeacherEmail().trim().toLowerCase())
                     .filter(u -> u.getRole() == Role.TEACHER)
-                    .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                    .orElseThrow(() -> new RuntimeException("Teacher not found: " + request.getTeacherEmail()));
             newClass.setTeacher(teacher);
         }
 
@@ -56,12 +53,19 @@ public class ClassService {
     public ClassResponse assignTeacher(Long classId, String teacherEmail) {
         log.info("Assigning teacher {} to class ID {}", teacherEmail, classId);
 
-        Class classEntity = classRepository.findById(classId)
-                .orElseThrow(() -> new RuntimeException("Class not found"));
+        if (teacherEmail == null || teacherEmail.trim().isEmpty()) {
+            throw new RuntimeException("Teacher email cannot be empty");
+        }
 
-        User teacher = userRepository.findByEmail(teacherEmail)
+        String cleanedEmail = teacherEmail.trim().toLowerCase();
+        log.info("Looking up teacher with email: {}", cleanedEmail);
+
+        Class classEntity = classRepository.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found: ID " + classId));
+
+        User teacher = userRepository.findByEmail(cleanedEmail)
                 .filter(u -> u.getRole() == Role.TEACHER)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                .orElseThrow(() -> new RuntimeException("Teacher not found: " + cleanedEmail));
 
         classEntity.setTeacher(teacher);
         log.info("Saving updated class: {}", classEntity);
@@ -73,11 +77,11 @@ public class ClassService {
         log.info("Adding student ID {} to class ID {}", studentId, classId);
 
         Class classEntity = classRepository.findById(classId)
-                .orElseThrow(() -> new RuntimeException("Class not found"));
+                .orElseThrow(() -> new RuntimeException("Class not found: ID " + classId));
 
         User student = userRepository.findById(studentId)
                 .filter(u -> u.getRole() == Role.STUDENT)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new RuntimeException("Student not found: ID " + studentId));
 
         if (classEntity.getStudents().size() >= classEntity.getMaxCapacity()) {
             throw new RuntimeException("Class capacity exceeded");
@@ -88,14 +92,27 @@ public class ClassService {
         return mapToResponse(classRepository.save(classEntity));
     }
 
+    public List<Class> getAllClasses() {
+        log.info("Fetching all classes");
+        return classRepository.findAll();
+    }
+
+    public List<Class> getClassesByTeacher(String teacherEmail) {
+        log.info("Fetching classes for teacher: {}", teacherEmail);
+        User teacher = userRepository.findByEmail(teacherEmail.trim().toLowerCase())
+                .filter(u -> u.getRole() == Role.TEACHER)
+                .orElseThrow(() -> new RuntimeException("Teacher not found: " + teacherEmail));
+        return classRepository.findByTeacher(teacher);
+    }
+
     private void validateClassCreation(ClassCreationRequest request) {
         log.info("Validating class creation: name={}, code={}", request.getName(), request.getCode());
 
         if (classRepository.findByCode(request.getCode()).isPresent()) {
-            throw new RuntimeException("Class code already exists");
+            throw new RuntimeException("Class code already exists: " + request.getCode());
         }
         if (classRepository.findByName(request.getName()).isPresent()) {
-            throw new RuntimeException("Class name already exists");
+            throw new RuntimeException("Class name already exists: " + request.getName());
         }
     }
 
@@ -109,10 +126,5 @@ public class ClassService {
         response.setTeacher(classEntity.getTeacher());
         response.setStudents(classEntity.getStudents());
         return response;
-    }
-
-    public List<Class> getAllClasses() {
-        log.info("Fetching all classes");
-        return classRepository.findAll();
     }
 }
