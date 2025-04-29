@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Profile - Teacher</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: white;
+      padding: 0.5rem 1rem;
+      border-bottom: 3px solid #1a73e8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 97.6%;
+      margin: 0 auto;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+    }
+
+    .header-center-text {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1a73e8;
+      }
+      
+      
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #1a73e8;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .header-button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .header-button:hover {
+      background: #1558b0;
+    }
+
+    .back-button {
+        border-radius: 50%;
+        padding: 0.5rem 0.7rem;
+        font-size: 1.2rem;
+        background: #1a73e8;
+        color: white;
+        transition: background 0.3s ease;
+      }
+
+      .back-button:hover {
+        background: #1558b0;
+      }
+      
+    .edit-profile-container {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+      flex: 1;
+    }
+
+    .left-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid #1a73e8;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .bio {
+      margin-top: 1rem;
+      text-align: center;
+      color: #333;
+    }
+
+    .change-bio-btn {
+      margin-top: 1rem;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Move Edit Profile to bottom-right of main container */
+    .edit-profile-button-bottom {
+        position: absolute;
+        bottom: 20px;
+        right: 30px;
+        margin-bottom: 3rem;
+        margin-right: 3rem;
+        background: #1a73e8;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      
+      .edit-profile-button-bottom:hover {
+        background: #1558b0;
+      }
+    .change-bio-btn:hover {
+      background: #1558b0;
+    }
+
+    .center-section {
+      flex: 1;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      color: #1a73e8;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 0.3rem;
+    }
+
+    .address-section {
+      margin-top: 1.5rem;
+    }
+
+    .add-address-btn {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .add-address-btn:hover {
+      background: #1558b0;
+    }
+
+    .address-input {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .save-btn {
+      margin-top: 1rem;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .save-btn:hover {
+      background: #1558b0;
+    }
+  </style>
+</head>
+<body>
+    <header>
+        <div class="logo">E-Val</div>
+        <div class="header-center-text">My Profile</div>
+        <div class="header-buttons">
+          <button class="header-button back-button">
+            &#8592;
+          </button>
+        </div>
+      </header>
+      
+
+  <div class="edit-profile-container">
+    <div class="left-section">
+        <img
+          src="/css/IMG-20220418-WA0002.jpg"
+          alt="Profile Picture"
+          class="profile-pic"
+          id="profilePic"
+          onclick="document.getElementById('uploadPic').click();"
+        />
+        <input type="file" id="uploadPic" accept="image/*" style="display: none;" onchange="changeProfilePic(event)" />
+        
+        <p class="bio" id="bioText">
+          Hi! I'm a teacher passionate about helping students succeed in their learning journey. 🧑‍🏫✨
+        </p>
+        <textarea id="bioEdit" style="display: none; width: 100%; height: 100px; border-radius: 8px; padding: 0.5rem; border: 1px solid #ccc;"></textarea>
+        <button class="change-bio-btn" id="editBioBtn" onclick="toggleBioEdit()">Change Bio</button>
+        <button class="save-btn" id="saveBioBtn" onclick="saveBio()" style="display: none;">Save Bio</button>
+        <button class="edit-profile-button-bottom">Edit Profile</button>
+
+      </div>
+      
+      
+
+    <div class="center-section">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" value="teacher_username" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" value="teacher@example.com" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" value="password123" />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" value="+1234567890" />
+      </div>
+
+      <div class="address-section">
+        <button class="add-address-btn" onclick="toggleAddressInput()">Add Address</button>
+        <div class="address-input" id="addressInput">
+          <input
+            type="text"
+            placeholder="Enter your address"
+            style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px;"
+          />
+          <button class="save-btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleAddressInput() {
+      const inputDiv = document.getElementById('addressInput');
+      inputDiv.style.display =
+        inputDiv.style.display === 'none' || inputDiv.style.display === ''
+          ? 'block'
+          : 'none';
+    }
+  
+    function toggleBioEdit() {
+      const bioText = document.getElementById('bioText');
+      const bioEdit = document.getElementById('bioEdit');
+      const editBtn = document.getElementById('editBioBtn');
+      const saveBtn = document.getElementById('saveBioBtn');
+  
+      bioEdit.value = bioText.innerText.trim();
+      bioText.style.display = 'none';
+      bioEdit.style.display = 'block';
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+    }
+  
+    function saveBio() {
+      const bioText = document.getElementById('bioText');
+      const bioEdit = document.getElementById('bioEdit');
+      const editBtn = document.getElementById('editBioBtn');
+      const saveBtn = document.getElementById('saveBioBtn');
+  
+      bioText.innerText = bioEdit.value;
+      bioText.style.display = 'block';
+      bioEdit.style.display = 'none';
+      editBtn.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+
+      function changeProfilePic(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+      
+        reader.onload = function (e) {
+          const img = document.getElementById('profilePic');
+          img.src = e.target.result;
+        };
+      
+        if (file) {
+          reader.readAsDataURL(file);
+        }
+      }
+      
+
+    }
+  </script>
+  
+</body>
+</html>

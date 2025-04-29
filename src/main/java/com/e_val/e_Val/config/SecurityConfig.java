@@ -55,6 +55,7 @@ public class SecurityConfig {
                     "/assignquiz.html",
                     "/upload.html",
                     "/assignstudent.html",
+                    "/editProfile.html",
                     "/mcq.html",
                     "/css/**",
                     "/js/**",
