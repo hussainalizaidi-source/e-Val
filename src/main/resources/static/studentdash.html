@@ -84,7 +84,21 @@
     <div class="grid-button" onclick="location.href='available_classes.html'">Browse Classes</div>
     <div class="grid-button" onclick="location.href='my_classes.html'">My Classes</div>
     <div class="grid-button" onclick="location.href='lecture_materials.html'">Lecture Materials</div>
-    <div class="grid-button" onclick="location.href='quiz_list.html'">Quizzes</div>
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <h3>Available Quizzes</h3>
+        <div class="quiz-filter">
+          <select id="courseFilter">
+            <option value="all">All Courses</option>
+            <option value="math">Mathematics</option>
+            <option value="science">Science</option>
+          </select>
+        </div>
+      </div>
+      <div class="quiz-list" id="quizList">
+        <!-- Quizzes will be dynamically populated here -->
+      </div>
+    </div>
     <div class="grid-button" onclick="location.href='performance_tracker.html'">Performance Tracker</div>
     <div class="grid-button" onclick="location.href='notifications.html'">Notifications</div>
     <div class="grid-button" onclick="location.href='assignments.html'">
@@ -124,6 +138,76 @@ function toggleSidebar() {
     mainContent.classList.remove('expanded');
   }
 }
+
+// Sample quiz data (replace with actual data from your backend)
+const quizzes = [
+  {
+    id: 1,
+    title: "Algebra Basics Quiz",
+    course: "math",
+    dueDate: "2023-12-20",
+    duration: 30,
+    status: "not-attempted",
+    attempted: false
+  },
+  {
+    id: 2,
+    title: "Chemical Reactions Exam",
+    course: "science",
+    dueDate: "2023-12-22",
+    duration: 45,
+    status: "attempted",
+    attempted: true
+  }
+];
+
+function renderQuizzes(filter = 'all') {
+  const quizList = document.getElementById('quizList');
+  quizList.innerHTML = '';
+  
+  const filteredQuizzes = quizzes.filter(quiz => 
+    filter === 'all' ? true : quiz.course === filter
+  );
+  
+  filteredQuizzes.forEach(quiz => {
+    const quizCard = document.createElement('div');
+    quizCard.className = 'quiz-card';
+    
+    quizCard.innerHTML = `
+      <div class="quiz-info">
+        <div class="quiz-title">${quiz.title}</div>
+        <div class="quiz-meta">
+          <span>Course: ${quiz.course.toUpperCase()}</span>
+          <span>Due: ${new Date(quiz.dueDate).toLocaleDateString()}</span>
+          <span>Duration: ${quiz.duration} mins</span>
+        </div>
+      </div>
+      <div class="quiz-status ${quiz.attempted ? 'status-attempted' : 'status-not-attempted'}">
+        ${quiz.attempted ? 'Attempted' : 'Not Attempted'}
+      </div>
+      <div class="quiz-actions">
+        <button onclick="attemptQuiz('${quiz.id}', '${quiz.type}')" ${quiz.attempted ? 'disabled' : ''}>
+          ${quiz.attempted ? 'Review' : 'Attempt'}
+        </button>
+      </div>
+    `;
+    
+    quizList.appendChild(quizCard);
+  });
+}
+
+function attemptQuiz(quizId, quizType) {
+  // Redirect with quiz ID and type as URL parameters
+  window.location.href = `attemptQuiz.html?quizId=${encodeURIComponent(quizId)}&type=${encodeURIComponent(quizType)}`;
+}
+
+// Event listeners
+document.getElementById('courseFilter').addEventListener('change', (e) => {
+  renderQuizzes(e.target.value);
+});
+
+// Initial render
+renderQuizzes();
 
 // Dummy SignOut
 function signOut() {

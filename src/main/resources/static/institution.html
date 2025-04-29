@@ -37,6 +37,7 @@
 
 .sidebar {
   width: 250px;
+  transition: all 0.3s ease;
   background: linear-gradient(180deg, #1a73e8 0%, white 100%);
   padding: 1.5rem;
   color: white;
@@ -129,6 +130,101 @@ main {
   flex: 1;
   padding: 2rem;
   background: #f0f2f5;
+}
+
+/* Add these styles to your CSS */
+.sidebar-logo {
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.sidebar-logo .logo {
+  font-size: 1.8rem;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.sidebar-logo .logo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar.collapsed .sidebar-logo .logo {
+  font-size: 0;
+}
+
+.sidebar.collapsed .sidebar-logo .logo::after {
+  content: "EV";
+  font-size: 1.5rem;
+}
+
+.sidebar.collapsed .menu-item span {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin-left: 0;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 0.8rem;
+}
+
+.sidebar.collapsed .sidebar-header div span {
+  display: none;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  background: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background: #f1f1f1;
+}
+
+.sidebar.collapsed .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.menu-item span {
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+.sidebar-header div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.sidebar-header div span {
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
     select {
@@ -228,7 +324,13 @@ main {
 <div class="container">
   <!-- Sidebar -->
   <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo">E-Val</span>
+    </div>
     <div class="sidebar-header">
+      <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <span class="toggle-icon">◀</span>
+      </button>
       <div class="sidebar-clock">🕒 10:30 AM</div>
       <div class="sidebar-calendar">📅 May 2, 2025</div>
     </div>
@@ -245,11 +347,12 @@ main {
       </li>
     </ul>
 
-    <div class="sidebar-footer">
-      <button class="signout-btn" onclick="signOut()" aria-label="Sign Out">
-        <img src="/css/power-off.png" alt="Sign Out" class="signout-icon">
-      </button>
-    </div>
+<!-- Add toggle button in sidebar -->
+<div class="sidebar-footer">
+  <button class="signout-btn" onclick="signOut()" aria-label="Sign Out">
+    <img src="/css/power-off.png" alt="Sign Out" class="signout-icon">
+  </button>
+</div>
   </nav>
 
   <main>
@@ -461,12 +564,37 @@ main {
       alert("Navigating to the Notification Center!");
     }
 
+    // Add this to your script
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const currentWidth = sidebar.offsetWidth;
+  
+  sidebar.classList.toggle('collapsed');
+  
+  // Toggle logo text
+  const logo = document.querySelector('.sidebar-logo .logo');
+  if (sidebar.classList.contains('collapsed')) {
+    logo.style.fontSize = '0';
+    setTimeout(() => {
+      logo.textContent = 'EV';
+      logo.style.fontSize = '1.5rem';
+    }, 300);
+  } else {
+    logo.style.fontSize = '0';
+    setTimeout(() => {
+      logo.textContent = 'E-Val';
+      logo.style.fontSize = '1.8rem';
+    }, 300);
+  }
+}
+
     
 const announcements = [
   { id: 1, title: "Exam Schedule Released", message: "Midterm exams will begin on May 5th.", date: "2025-04-28" },
   { id: 2, title: "Holiday Notice", message: "Campus will remain closed on May 1st for Labour Day.", date: "2025-04-26" },
   { id: 3, title: "New Course Available", message: "A new elective on AI Ethics is open for registration.", date: "2025-04-25" },
 ];
+
 
 function renderAnnouncements() {
   const list = document.getElementById("announcementList");

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attempt Quiz</title>
+    <style>
+        /* Add to your existing CSS or create attemptquiz.css */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        .question-card {
+            margin-bottom: 2rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        .options-container {
+            margin: 1.5rem 0;
+        }
+
+        .option-label {
+            display: block;
+            margin: 0.8rem 0;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-label:hover {
+            border-color: #3b82f6;
+            background: #f0f4ff;
+        }
+
+        input[type="radio"]:checked + .option-label {
+            border-color: #3b82f6;
+            background: #f0f4ff;
+        }
+
+        .text-answer {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .number-answer {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .nav-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin: 1rem 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .completion-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div id="questionContainer"></div>
+    </div>
+
+    <div class="completion-modal" id="completionModal">
+        <div class="modal-content">
+            <h2>Exam Finished! 🎉</h2>
+            <p>You'll be redirected to the dashboard shortly.</p>
+        </div>
+    </div>
+
+    <script>
+        // Mock data - Replace with actual API calls
+        const mockQuiz = {
+            id: 1,
+            title: "Sample Quiz",
+            questions: [
+                {
+                    type: "mcq",
+                    text: "What is the capital of France?",
+                    options: ["London", "Paris", "Berlin", "Madrid"],
+                    correct: 1
+                },
+                {
+                    type: "short",
+                    text: "Explain Newton's First Law of Motion",
+                    correct: "An object in motion stays in motion..."
+                },
+                {
+                    type: "numerical",
+                    text: "What is 2 + 2?",
+                    correct: 4
+                }
+            ]
+        };
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+
+        function initializeQuiz() {
+            // Get quiz ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const quizId = urlParams.get('quizId');
+            
+            // Here you would fetch the actual quiz from your backend
+            // For now, we'll use mock data
+            renderQuestion(mockQuiz.questions[currentQuestion]);
+            updateProgress();
+        }
+
+        function renderQuestion(question) {
+            const container = document.getElementById('questionContainer');
+            let html = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">Question ${currentQuestion + 1}</div>
+                    </div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="options-container">
+            `;
+
+            switch(question.type) {
+                case 'mcq':
+                    question.options.forEach((option, index) => {
+                        html += `
+                            <label>
+                                <input type="radio" name="answer" value="${index}" hidden>
+                                <div class="option-label">${option}</div>
+                            </label>
+                        `;
+                    });
+                    break;
+                
+                case 'short':
+                    html += `<textarea class="text-answer" placeholder="Type your answer here..."></textarea>`;
+                    break;
+                
+                case 'numerical':
+                    html += `<input type="number" class="number-answer" placeholder="Enter your answer">`;
+                    break;
+            }
+
+            html += `
+                    </div>
+                    <div class="navigation-buttons">
+                        ${currentQuestion > 0 ? 
+                            `<button class="nav-button" onclick="previousQuestion()">Previous</button>` : 
+                            `<div></div>`}
+                        <button class="nav-button" onclick="nextQuestion()">
+                            ${currentQuestion === mockQuiz.questions.length - 1 ? 'Finish' : 'Next'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion + 1) / mockQuiz.questions.length * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+
+        function nextQuestion() {
+            // Save answer
+            const question = mockQuiz.questions[currentQuestion];
+            let answer;
+
+            switch(question.type) {
+                case 'mcq':
+                    answer = document.querySelector('input[name="answer"]:checked')?.value;
+                    break;
+                case 'short':
+                    answer = document.querySelector('.text-answer').value;
+                    break;
+                case 'numerical':
+                    answer = document.querySelector('.number-answer').value;
+                    break;
+            }
+
+            userAnswers[currentQuestion] = answer;
+
+            if (currentQuestion < mockQuiz.questions.length - 1) {
+                currentQuestion++;
+                renderQuestion(mockQuiz.questions[currentQuestion]);
+                updateProgress();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion(mockQuiz.questions[currentQuestion]);
+                updateProgress();
+            }
+        }
+
+        function finishQuiz() {
+            // Show completion modal
+            const modal = document.getElementById('completionModal');
+            modal.style.display = 'flex';
+            
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 3000);
+        }
+
+        // Initialize quiz when page loads
+        initializeQuiz();
+    </script>
+</body>
+</html>

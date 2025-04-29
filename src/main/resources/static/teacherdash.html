@@ -4,132 +4,168 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard with Sidebar</title>
-    <link rel="stylesheet" href="/css/tdboard.css">
+  <link rel="stylesheet" href="/css/tdboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <div id="notificationBar" class="notification-bar"></div>
 
-<header>
-  <div class="profile-container">
-    <img src="/css/IMG-20220418-WA0002.jpg" alt="Profile Picture" class="profile-pic">
-    <div class="teacher-info">
-      <h2>John Doe</h2>
+  <header>
+    <div class="profile-container">
+      <img src="/css/IMG-20220418-WA0002.jpg" alt="Profile Picture" class="profile-pic">
+      <div class="teacher-info">
+        <h2>John Doe</h2>
+      </div>
     </div>
-  </div>
-  <div class="search-container">
-    <input type="text" class="search-input" placeholder="Search...">
-    <button class="search-button">🔍</button>
-  </div>
-  <a href="notification_center.html" class="notification-btn"><img src="/css/gear.png" alt="Notifications" class="noti-icon" ></a>
-</header>
-
-
-
-<div class="main-content">
-  <div class="sidebar" id="sidebar">
-    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-    <div class="logo-container">
-      <h1 class="logo-text" id="logoText">E-Val</h1>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Search classes, students...">
+      <button class="search-button">🔍</button>
     </div>
-    <div>
+    <a href="notification_center.html" class="notification-btn">
+      <img src="/css/gear.png" alt="Notifications" class="noti-icon">
+    </a>
+  </header>
+
+  <div class="main-content">
+    <div class="sidebar" id="sidebar">
+      <div class="logo-container">
+        <h1 class="logo-text" id="logoText">E-Val</h1>
+      </div>
       
       <div class="clock" id="clock">00:00:00</div>
+      <div class="sidebar-calendar">📅 May 2, 2025</div>
 
-      <div class="class-box" onclick="toggleDetails(this)">
-        <strong>Math Class</strong>
-        <div class="class-details">
-          <p>Class ID: MATH123</p>
-          <button class="show-all-btn">Show All</button>
+      <div class="class-container">
+        <div class="class-box" onclick="toggleDetails(this)">
+          <strong>Math Class</strong>
+          <div class="class-details">
+            <p>Class ID: MATH123</p>
+            <div class="student-count">🎓 32 Students</div>
+            <button class="show-all-btn">Show All</button>
+          </div>
+        </div>
+
+        <div class="class-box" onclick="toggleDetails(this)">
+          <strong>Science Class</strong>
+          <div class="class-details">
+            <p>Class ID: SCI456</p>
+            <div class="student-count">🎓 28 Students</div>
+            <button class="show-all-btn">Show All</button>
+          </div>
+        </div>
+
+        <div class="class-box" onclick="toggleDetails(this)">
+          <strong>History Class</strong>
+          <div class="class-details">
+            <p>Class ID: HIST789</p>
+            <div class="student-count">🎓 35 Students</div>
+            <button class="show-all-btn">Show All</button>
+          </div>
         </div>
       </div>
 
-      <div class="class-box" onclick="toggleDetails(this)">
-        <strong>Science Class</strong>
-        <div class="class-details">
-          <p>Class ID: SCI456</p>
-          <button class="show-all-btn">Show All</button>
-        </div>
-      </div>
-
-      <div class="class-box" onclick="toggleDetails(this)">
-        <strong>History Class</strong>
-        <div class="class-details">
-          <p>Class ID: HIST789</p>
-          <button class="show-all-btn">Show All</button>
-        </div>
-      </div>
+      <button class="signout-btn" onclick="signOut()">
+        <img src="/css/power-off.png" alt="Sign Out" class="signout-icon">
+      </button>
     </div>
 
-    <button class="signout-btn" onclick="signOut()">
-      <img src="/css/power-off.png" alt="Sign Out" class="signout-icon" >
-    </button>
+    <section class="dashboard-content">
+      <div class="grid-button" onclick="location.href='createQuiz.html'">
+        <span class="grid-icon">📝</span>
+        <span class="grid-label">Create Quiz</span>
+        <div class="hover-effect"></div>
+      </div>
+      
+      <div class="grid-button" onclick="location.href='assignquiz.html'">
+        <span class="grid-icon">📤</span>
+        <span class="grid-label">Assign Quiz</span>
+        <div class="hover-effect"></div>
+      </div>
+
+      <div class="grid-button" onclick="location.href='upload.html'">
+        <span class="grid-icon">📁</span>
+        <span class="grid-label">Upload Material</span>
+        <div class="hover-effect"></div>
+      </div>
+
+      <div class="grid-button" onclick="location.href='assignstudent.html'">
+        <span class="grid-icon">👨🎓</span>
+        <span class="grid-label">Assign Students</span>
+        <div class="hover-effect"></div>
+      </div>
+
+      <div class="grid-button" onclick="location.href='viewresults.html'">
+        <span class="grid-icon">📊</span>
+        <span class="grid-label">View Results</span>
+        <div class="hover-effect"></div>
+      </div>
+
+      <div class="grid-button" onclick="location.href='classprogress.html'">
+        <span class="grid-icon">📈</span>
+        <span class="grid-label">Class Progress</span>
+        <div class="hover-effect"></div>
+      </div>
+
+      <div class="grid-button" onclick="location.href='checkQuizzes.html'">
+        <span class="grid-icon">✅</span>
+        <span class="grid-label">Check Quizzes</span>
+        <div class="hover-effect"></div>
+      </div>
+
+      <div class="grid-button" onclick="location.href='editprofile.html'">
+        <span class="grid-icon">👤</span>
+        <span class="grid-label">Edit Profile</span>
+        <div class="hover-effect"></div>
+      </div>
+    </section>
   </div>
 
-  <section class="dashboard-content">
-    <div class="grid-button" onclick="location.href='createQuiz.html'">Create Quiz</div>
-    <div class="grid-button" onclick="location.href='assignquiz.html'">Assign Quiz</div>
-    <div class="grid-button" onclick="location.href='upload.html'">Upload Material</div>
-    <div class="grid-button" onclick="location.href='assignstudent.html'">Assign Students</div>
-    <div class="grid-button" onclick="location.href='viewresults.html'">View Results</div>
-    <div class="grid-button" onclick="location.href='classprogress.html'">Class Progress</div>
-    <div class="grid-button" onclick="location.href='markingcriteria.html'">Marking Criteria</div>
-    <div class="grid-button" onclick="location.href='editprofile.html'">Edit Profile</div>
-  </section>
-</div>
-
-<script>
-  // Live Clock
-  function updateClock() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
-
-  // Expand/Collapse Class Details
-  function toggleDetails(box) {
-    const details = box.querySelector('.class-details');
-    const isVisible = details.style.display === 'block';
-    details.style.display = isVisible ? 'none' : 'block';
-  }
-
-  // Collapse Sidebar
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const logoText = document.getElementById('logoText');
-    
-    sidebar.classList.toggle('collapsed');
-    
-    if (sidebar.classList.contains('collapsed')) {
-      logoText.textContent = 'EV';
-    } else {
-      logoText.textContent = 'E-Val';
+  <script>
+    // Live Clock
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
     }
-  }
-  
+    setInterval(updateClock, 1000);
+    updateClock();
 
-  // Dummy SignOut function
-  function signOut() {
-    alert('Signing out...');
-    // Redirect or perform signout actions here
-  }
+    // Expand/Collapse Class Details
+    function toggleDetails(box) {
+      const details = box.querySelector('.class-details');
+      const isVisible = details.style.display === 'block';
+      details.style.display = isVisible ? 'none' : 'block';
+      box.classList.toggle('active', !isVisible);
+    }
 
-  function showNotification(message, duration = 3000) {
-    const notification = document.getElementById('notificationBar');
-    notification.textContent = message;
-    notification.style.display = 'block';
-    
-    // Hide after 'duration' milliseconds
-    setTimeout(() => {
-      notification.style.display = 'none';
-    }, duration);
-  }
-  
+    // Collapse Sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const logoText = document.getElementById('logoText');
+      sidebar.classList.toggle('collapsed');
+      logoText.textContent = sidebar.classList.contains('collapsed') ? 'EV' : 'E-Val';
+    }
 
-</script>
+    // Notification System
+    function showNotification(message, duration = 3000) {
+      const notification = document.getElementById('notificationBar');
+      notification.textContent = message;
+      notification.style.top = '20px';
+      setTimeout(() => {
+        notification.style.top = '-50px';
+      }, duration);
+    }
 
+    // Dummy SignOut
+    function signOut() {
+      showNotification('Signing out...');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 1500);
+    }
+  </script>
 </body>
 </html>

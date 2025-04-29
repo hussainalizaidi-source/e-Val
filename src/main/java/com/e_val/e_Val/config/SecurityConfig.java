@@ -58,6 +58,8 @@ public class SecurityConfig {
                     "/editProfile.html",
                     "/studenteditProfile.html",
                     "/institution.html",
+                    "/viewAss.html",
+                    "/attemptQuiz.html",
                     "/mcq.html",
                     "/css/**",
                     "/js/**",
