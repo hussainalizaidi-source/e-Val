@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Teacher Quiz Review</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* New Header Styles */
+.page-header {
+    background: var(--glass);
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: slideIn 0.6s ease-out;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.logo::before {
+    content: "🎓";
+    margin-right: 0.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.title {
+    font-size: 1.8rem;
+    color: var(--text);
+    font-weight: 600;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 100%;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            backdrop-filter: blur(20px);
+        }
+
+        .student-header {
+            background: var(--glass);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .student-info-item {
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .student-info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .students-table {
+            background: var(--glass);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        th {
+            background: rgba(248, 250, 252, 0.8);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .performance-tag {
+            padding: 0.4rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .excellent { 
+            background: #dcfce7; 
+            color: #166534;
+            animation: pulseSuccess 2s infinite;
+        }
+
+        .good { 
+            background: #fef9c3; 
+            color: #854d0e;
+        }
+
+        .average { 
+            background: #ffe4e6; 
+            color: #991b1b;
+            animation: pulseDanger 2s infinite;
+        }
+
+        .view-details-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-details-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-container {
+            padding: 1rem;
+            background: var(--glass);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            animation: modalOpen 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseSuccess {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes pulseDanger {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes modalOpen {
+            to { transform: scale(1); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            pointer-events: none;
+        }
+
+        .progress-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 75%, #e2e8f0 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .celebrate {
+            animation: celebrate 0.6s ease-out;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- New Header Section -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo">E-Val</div>
+                    <div class="title">View Quiz</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="student-header">
+            <div class="student-info-item">
+                <div class="label">Quiz Title</div>
+                <div class="value">Mathematics Midterm Exam</div>
+            </div>
+            <div class="student-info-item">
+                <div class="label">Total Marks</div>
+                <div class="value">50</div>
+            </div>
+            <div class="student-info-item">
+                <div class="label">Class</div>
+                <div class="value">XII-A (Science)</div>
+            </div>
+            <div class="student-info-item">
+                <div class="label">Conducted On</div>
+                <div class="value">15 Dec 2023</div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search students...">
+        </div>
+
+        <div class="students-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll No.</th>
+                        <th>Marks Obtained</th>
+                        <th>Performance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rahul Sharma</td>
+                        <td>12A25</td>
+                        <td>45/50</td>
+                        <td><span class="performance-tag excellent">Excellent</span></td>
+                        <td><button class="view-details-btn" onclick="showStudentDetails()">View Details</button></td>
+                    </tr>
+                    <tr>
+                        <td>Priya Singh</td>
+                        <td>12A12</td>
+                        <td>38/50</td>
+                        <td><span class="performance-tag good">Good</span></td>
+                        <td><button class="view-details-btn" onclick="showStudentDetails()">View Details</button></td>
+                    </tr>
+                    <tr>
+                        <td>Amit Patel</td>
+                        <td>12A08</td>
+                        <td>28/50</td>
+                        <td><span class="performance-tag average">Needs Improvement</span></td>
+                        <td><button class="view-details-btn" onclick="showStudentDetails()">View Details</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="studentModal" class="modal">
+            <div class="modal-content">
+                <h2>Rahul Sharma - Detailed Performance</h2>
+                <div class="student-info">
+                    <p>Roll No: 12A25 | Class: XII-A (Science)</p>
+                </div>
+                
+                <div class="question-breakdown">
+                    <div class="question-item">
+                        <div class="question-text">Q1: What is 2 + 2? (2 marks)</div>
+                        <div class="answer-section">
+                            <div class="answer-box correct">
+                                <strong>Student Answer:</strong> 4
+                            </div>
+                            <div class="answer-box">
+                                <strong>Correct Answer:</strong> 4
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-item incorrect">
+                        <div class="question-text">Q2: Solve 3x = 12 (3 marks)</div>
+                        <div class="answer-section">
+                            <div class="answer-box">
+                                <strong>Student Answer:</strong> 3
+                            </div>
+                            <div class="answer-box">
+                                <strong>Correct Answer:</strong> 4
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="view-details-btn" onclick="closeModal()">Close</button>
+                <button class="view-details-btn" style="background: var(--success); margin-left: 1rem;">
+                    Export as PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Confetti Animation
+        function createConfetti() {
+            for(let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animation = ` 
+                    fall ${Math.random() * 3 + 2}s linear,
+                    spin ${Math.random() * 4 + 2}s linear infinite
+                `;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.background = `hsl(${Math.random() * 360}deg, 70%, 60%)`;
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        // Enhanced Student Details with Multiple Animation Types
+        function showStudentDetails(event) {
+            const modal = document.getElementById('studentModal');
+            const row = event.target.closest('tr');
+            const score = parseInt(row.cells[2].textContent);
+            
+            modal.style.display = 'flex';
+            
+            // Different animations based on score
+            if(score > 45) {
+                createConfetti();
+                modal.classList.add('celebrate-gold');
+                setTimeout(() => modal.classList.remove('celebrate-gold'), 1000);
+            } else if(score > 35) {
+                modal.classList.add('celebrate-silver');
+                setTimeout(() => modal.classList.remove('celebrate-silver'), 1000);
+            }
+            
+            // Add student details to modal
+            const studentName = row.cells[0].textContent;
+            const studentRoll = row.cells[1].textContent;
+            modal.querySelector('h2').textContent = `${studentName} - Detailed Performance`;
+            modal.querySelector('.student-info p').textContent = 
+                `Roll No: ${studentRoll} | Class: XII-A (Science)`;
+        }
+        
+        // Enhanced Modal Close with Animation
+        function closeModal() {
+            const modal = document.getElementById('studentModal');
+            modal.style.animation = 'modalClose 0.3s ease-out';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.style.animation = '';
+            }, 300);
+        }
+        
+        // Enhanced Table Sorting with Direction Indicators
+        let sortDirection = 1;
+        document.querySelectorAll('th').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.cellIndex;
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.rows);
+                
+                // Remove previous sort indicators
+                document.querySelectorAll('th').forEach(h => h.innerHTML = h.innerHTML.replace(' ↑↓', ''));
+                
+                // Update sort direction
+                sortDirection *= -1;
+                header.innerHTML += sortDirection === 1 ? ' ↑' : ' ↓';
+                
+                rows.sort((a, b) => {
+                    const aVal = a.cells[column].textContent;
+                    const bVal = b.cells[column].textContent;
+                    return sortDirection * aVal.localeCompare(bVal, undefined, {numeric: true});
+                });
+                
+                tbody.append(...rows);
+            });
+        });
+        
+        // Enhanced Search with Debounce and No Results Message
+        let searchTimeout;
+        document.querySelector('.search-input').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    const name = row.cells[0].textContent.toLowerCase();
+                    const rollNo = row.cells[1].textContent.toLowerCase();
+                    const isVisible = name.includes(searchTerm) || rollNo.includes(searchTerm);
+                    
+                    row.style.display = isVisible ? '' : 'none';
+                    if(isVisible) visibleCount++;
+                });
+                
+                // Show no results message
+                const noResults = document.getElementById('noResults');
+                if(visibleCount === 0 && !noResults) {
+                    const tr = document.createElement('tr');
+                    tr.id = 'noResults';
+                    tr.innerHTML = `<td colspan="5" style="text-align:center;padding:2rem;">
+                        🧐 No students found matching "${searchTerm}"
+                    </td>`;
+                    document.querySelector('tbody').appendChild(tr);
+                } else if(visibleCount > 0 && noResults) {
+                    noResults.remove();
+                }
+            }, 300);
+        });
+        
+        // Enhanced Click Outside with Animation
+        window.onclick = function(event) {
+            const modal = document.getElementById('studentModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        // Add Hover Effects to Table Rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'scale(1.02)';
+                row.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            });
+            
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'none';
+                row.style.boxShadow = 'none';
+            });
+        });
+        
+        // Add Ripple Effect to Buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: absolute;
+                    background: rgba(255,255,255,0.4);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                `;
+                
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+                
+                button.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+        </script>
+</body>
+</html>
