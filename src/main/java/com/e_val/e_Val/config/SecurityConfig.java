@@ -39,7 +39,7 @@ public class SecurityConfig {
         http
             .cors(withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
-            .headers(headers -> headers.frameOptions().disable())
+            .headers(headers -> headers.frameOptions(frame->frame.disable()))
             .authorizeHttpRequests(auth -> auth
                 // Permit static resources
                 .requestMatchers(
@@ -59,6 +59,8 @@ public class SecurityConfig {
                     "/studenteditProfile.html",
                     "/institution.html",
                     "/viewAss.html",
+                    "/viewQuiz.html",
+                    "/viewAttemptQuiz.html",
                     "/attemptQuiz.html",
                     "/mcq.html",
                     "/css/**",
