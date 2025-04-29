@@ -1,6 +1,8 @@
 package com.e_val.e_Val.model.dto;
+import com.e_val.e_Val.model.enums.Role;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
     @NotBlank
-    private String name;  // Must match 'fullName' in your frontend
+    private String name;
     
     @Email
     @NotBlank
@@ -23,4 +25,7 @@ public class RegisterRequest {
     @NotBlank
     @Size(min = 6)
     private String password;
+
+    @NotNull
+    private Role role;  // Add role field
 }

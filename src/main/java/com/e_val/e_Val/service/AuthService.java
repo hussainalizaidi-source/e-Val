@@ -30,7 +30,7 @@ public class AuthService {
             .name(request.getName())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
-            .role(Role.STUDENT) // Default role (adjust as needed)
+            .role(request.getRole())  // Use selected role
             .build();
 
         userRepository.save(user);
@@ -40,17 +40,20 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
-            )
-        );
+        // authenticationManager.authenticate(
+        //     new UsernamePasswordAuthenticationToken(
+        //         request.getEmail(),
+        //         request.getPassword()
+        //     )
+        // );
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new RuntimeException("User not found"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
+        // Debug output
+        System.out.println("Loaded user role: " + user.getRole());
+        System.out.println("Authorities: " + user.getAuthorities());
         return AuthResponse.builder()
             .token(jwtUtils.generateToken(user))
             .build();

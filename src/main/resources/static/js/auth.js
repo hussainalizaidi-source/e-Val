@@ -19,7 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if(response.ok) {
                     localStorage.setItem('token', data.token);
-                    window.location.href = '/'; // Redirect to dashboard
+    
+                    // Get role from token and redirect
+                    const token = data.token;
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    switch(payload.role) {
+                        case 'ADMIN':
+                            window.location.href = '/admin-dashboard.html';
+                            break;
+                        case 'TEACHER':
+                            window.location.href = '/teacherdash.html';
+                            break;
+                        case 'STUDENT':
+                            window.location.href = '/student-dashboard.html';
+                            break;
+                        default:
+                            window.location.href = '/';
+                    }
                 } else {
                     showError(data.message || 'Login failed');
                 }
@@ -36,9 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const fullName = document.getElementById('fullName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
-
+            const role = document.querySelector('input[name="role"]:checked').value;
+        
             try {
-                const response = await fetch('http://localhost:8080/auth/register', {
+                const response = await fetch('/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -46,10 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ 
                         name: fullName, 
                         email, 
-                        password 
+                        password,
+                        role  // Add role to request body
                     })
                 });
-
+        
                 const data = await response.json();
                 
                 if(response.ok) {

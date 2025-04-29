@@ -1,5 +1,5 @@
 package com.e_val.e_Val.controller;
-
+import com.e_val.e_Val.model.enums.Role;
 import com.e_val.e_Val.model.dto.AuthRequest;
 import com.e_val.e_Val.model.dto.AuthResponse;
 import com.e_val.e_Val.model.dto.RegisterRequest;
@@ -39,6 +39,12 @@ public class AuthController {
         try {
             if (userRepository.findByEmail(request.getEmail()).isPresent()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+            }
+            
+            try {
+                Role.valueOf(request.getRole().name());
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role specified");
             }
             
             AuthResponse response = authService.register(request);

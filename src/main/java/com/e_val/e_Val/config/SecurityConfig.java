@@ -45,6 +45,8 @@ public class SecurityConfig {
                     "/",
                     "/login.html",
                     "/register.html",
+                    "/teacherdash.html",
+                    "/notifications.html",
                     "/css/**",
                     "/js/**",
                     "/images/**"
@@ -55,12 +57,17 @@ public class SecurityConfig {
                 
                 // Permit pre-flight requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                
+                .requestMatchers("/teacher/**").hasRole("TEACHER")  // Add teacher-specific paths   
+                .requestMatchers("/student/**").hasRole("STUDENT")  // Add student-specific paths
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+
                 // Secure all other endpoints
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login.html")
+                //.loginProcessingUrl("/auth/login")
+                //.successHandler(roleBasedAuthenticationSuccessHandler())  // Add this
                 .permitAll()
             )
             .logout(logout -> logout
@@ -98,9 +105,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:8080",
+            "http://localhost:8080/login.html", 
+            "http://localhost:8080/register.html",
+            "http://localhost:8080/teacherdash.html"  // Add this
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);  // Add this for cookies if needed
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

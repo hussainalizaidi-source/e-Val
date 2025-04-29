@@ -20,6 +20,20 @@
                 <label>Password</label>
                 <input type="password" id="regPassword" required>
             </div>
+            <div class="form-group role-selection">
+                <label>Select Role:</label>
+                <div class="role-options">
+                    <label>
+                        <input type="radio" name="role" value="STUDENT" checked> Student
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="TEACHER"> Teacher
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="ADMIN"> Admin
+                    </label>
+                </div>
+            </div>
             <button type="submit">Register</button>
         </form>
         <p>Already have an account? <a href="/login.html">Login here</a></p>
