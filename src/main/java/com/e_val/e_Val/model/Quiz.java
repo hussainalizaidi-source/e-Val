@@ -2,6 +2,8 @@ package com.e_val.e_Val.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "quiz")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,8 +43,7 @@ public class Quiz {
     @JsonIgnoreProperties({"teacher", "students"})
     private Class assignedClass;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)    @JsonManagedReference
     private List<Question> questions = new ArrayList<>();
 
     @PrePersist

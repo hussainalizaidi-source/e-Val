@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard with Sidebar</title>
-    <link rel="stylesheet" href="/css/tdboard.css">
+  <link rel="stylesheet" href="/css/tdboard.css">
 </head>
 
 <body>
@@ -20,10 +20,8 @@
     <input type="text" class="search-input" placeholder="Search...">
     <button class="search-button">🔍</button>
   </div>
-  <a href="notification_center.html" class="notification-btn"><img src="/css/gear.png" alt="Notifications" class="noti-icon" ></a>
+  <a href="notification_center.html" class="notification-btn"><img src="/css/gear.png" alt="Notifications" class="noti-icon"></a>
 </header>
-
-
 
 <div class="main-content">
   <div class="sidebar" id="sidebar">
@@ -32,7 +30,6 @@
       <h1 class="logo-text" id="logoText">E-Val</h1>
     </div>
     <div>
-      
       <div class="clock" id="clock">00:00:00</div>
 
       <div class="class-box" onclick="toggleDetails(this)">
@@ -61,7 +58,7 @@
     </div>
 
     <button class="signout-btn" onclick="signOut()">
-      <img src="/css/power-off.png" alt="Sign Out" class="signout-icon" >
+      <img src="/css/power-off.png" alt="Sign Out" class="signout-icon">
     </button>
   </div>
 
@@ -72,7 +69,7 @@
     <div class="grid-button" onclick="location.href='assignstudent.html'">Assign Students</div>
     <div class="grid-button" onclick="location.href='viewresults.html'">View Results</div>
     <div class="grid-button" onclick="location.href='classprogress.html'">Class Progress</div>
-    <div class="grid-button" onclick="location.href='markingcriteria.html'">Marking Criteria</div>
+    <div class="grid-button" onclick="location.href='markAttempts.html'">Mark Quiz Attempts</div>
     <div class="grid-button" onclick="location.href='editprofile.html'">Edit Profile</div>
   </section>
 </div>
@@ -109,7 +106,6 @@
       logoText.textContent = 'E-Val';
     }
   }
-  
 
   // Dummy SignOut function
   function signOut() {
@@ -127,8 +123,6 @@
       notification.style.display = 'none';
     }, duration);
   }
-  
-
 </script>
 
 </body>

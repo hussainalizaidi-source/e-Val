@@ -118,34 +118,25 @@
 
         // Fetch quizzes by teacher
         async function fetchQuizzes() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('jwtToken');
             if (!token) {
                 showNotification('Please log in to continue', true);
                 window.location.href = '/login.html';
                 return;
             }
             try {
-                console.log('JWT Token:', token);
+                console.log('JWT Token:', token.substring(0, 20) + '...');
                 const response = await fetch('/api/quizzes/teacher', {
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
                 });
                 console.log('Fetch quizzes response status:', response.status);
-                console.log('Response headers:', response.headers.get('Content-Type'));
-                const responseBody = await response.text();
-                console.log('Raw quiz response:', responseBody.substring(0, 500));
                 if (!response.ok) {
-                    let errorMessage = responseBody;
-                    try {
-                        const errorJson = JSON.parse(responseBody);
-                        errorMessage = errorJson.message || responseBody;
-                    } catch (e) {
-                        // Not JSON
-                    }
-                    throw new Error(`${response.status}: ${errorMessage}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to fetch quizzes');
                 }
-                const quizzes = JSON.parse(responseBody);
+                const quizzes = await response.json();
                 console.log('Quizzes fetched:', quizzes);
                 const quizSelect = document.getElementById('quizSelect');
                 quizSelect.innerHTML = '<option value="" disabled selected>Select Quiz</option>';
@@ -166,34 +157,25 @@
 
         // Fetch classes by teacher
         async function fetchClasses() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('jwtToken');
             if (!token) {
                 showNotification('Please log in to continue', true);
                 window.location.href = '/login.html';
                 return;
             }
             try {
-                console.log('Fetching classes with token:', token.substring(0, 50) + '...');
+                console.log('Fetching classes with token:', token.substring(0, 20) + '...');
                 const response = await fetch('/api/classes', {
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
                 });
                 console.log('Fetch classes response status:', response.status);
-                console.log('Response headers:', response.headers.get('Content-Type'));
-                const responseBody = await response.text();
-                console.log('Raw classes response:', responseBody.substring(0, 500));
                 if (!response.ok) {
-                    let errorMessage = responseBody;
-                    try {
-                        const errorJson = JSON.parse(responseBody);
-                        errorMessage = errorJson.message || responseBody;
-                    } catch (e) {
-                        // Not JSON
-                    }
-                    throw new Error(`${response.status}: ${errorMessage}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to fetch classes');
                 }
-                const classes = JSON.parse(responseBody);
+                const classes = await response.json();
                 console.log('Classes fetched:', classes);
                 const classSelect = document.getElementById('classSelect');
                 classSelect.innerHTML = '<option value="" disabled selected>Select Class</option>';
@@ -210,17 +192,20 @@
             }
         }
 
-        // Decode JWT to get teacher email
-        function getTeacherEmailFromToken(token) {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                console.log('JWT Payload:', payload);
-                return payload.sub;
-            } catch (e) {
-                console.error('Error decoding token:', e);
-                showNotification('Invalid token format', true);
-                return null;
-            }
+        // Format date to ISO string without milliseconds
+        function toPKTISOString(date) {
+            // PKT is UTC+5
+            const pktOffset = 5 * 60; // Offset in minutes
+            const utcDate = new Date(date.getTime() + (pktOffset * 60 * 1000));
+            const year = utcDate.getUTCFullYear();
+            const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(utcDate.getUTCDate()).padStart(2, '0');
+            const hours = String(utcDate.getUTCHours()).padStart(2, '0');
+            const minutes = String(utcDate.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(utcDate.getUTCSeconds()).padStart(2, '0');
+            const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+05:00`;
+            console.log('Converted to PKT ISO:', isoString);
+            return isoString;
         }
 
         // Assign quiz
@@ -246,13 +231,13 @@
             const quizData = {
                 quizId: parseInt(quizId),
                 classId: parseInt(classId),
-                endTime: endTimeDate.toISOString(),
+                endTime: toPKTISOString(endTimeDate),
                 timeLimitMinutes: timeLimitMinutes ? parseInt(timeLimitMinutes) : null
             };
 
             try {
                 console.log('Assigning quiz:', quizData);
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('jwtToken');
                 const response = await fetch('/api/quizzes/assign', {
                     method: 'POST',
                     headers: {
@@ -262,17 +247,9 @@
                     body: JSON.stringify(quizData)
                 });
                 console.log('Assign quiz response status:', response.status);
-                const responseBody = await response.text();
-                console.log('Assign quiz raw response:', responseBody.substring(0, 500));
                 if (!response.ok) {
-                    let errorMessage = responseBody;
-                    try {
-                        const errorJson = JSON.parse(responseBody);
-                        errorMessage = errorJson.message || responseBody;
-                    } catch (e) {
-                        // Not JSON
-                    }
-                    throw new Error(`${response.status}: ${errorMessage}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to assign quiz');
                 }
                 showNotification('Quiz assigned successfully!');
                 document.getElementById('quizSelect').value = '';

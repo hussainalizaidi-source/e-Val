@@ -1,15 +1,16 @@
 package com.e_val.e_Val.service;
 
 import com.e_val.e_Val.model.User;
-import com.e_val.e_Val.model.dto.*;
+import com.e_val.e_Val.model.dto.AuthRequest;
+import com.e_val.e_Val.model.dto.AuthResponse;
+import com.e_val.e_Val.model.dto.RegisterRequest;
 import com.e_val.e_Val.model.enums.Role;
 import com.e_val.e_Val.repository.UserRepository;
 import com.e_val.e_Val.utils.JwtUtils;
-
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,32 +21,34 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService; // Added dependency
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
 
-        User user = User.builder()
+        User.UserBuilder userBuilder = User.builder()
             .name(request.getName())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
-            .role(request.getRole())  // Use selected role
-            .build();
+            .role(request.getRole());
 
+        // Assign roll_no for students
+        if (request.getRole() == Role.STUDENT) {
+            String rollNo = userService.generateNextRollNo();
+            userBuilder.rollNo(rollNo);
+        }
+
+        User user = userBuilder.build();
         userRepository.save(user);
+
         return AuthResponse.builder()
             .token(jwtUtils.generateToken(user))
             .build();
     }
 
     public AuthResponse login(AuthRequest request) {
-        // authenticationManager.authenticate(
-        //     new UsernamePasswordAuthenticationToken(
-        //         request.getEmail(),
-        //         request.getPassword()
-        //     )
-        // );
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new RuntimeException("User not found"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -56,6 +59,7 @@ public class AuthService {
         System.out.println("Authorities: " + user.getAuthorities());
         return AuthResponse.builder()
             .token(jwtUtils.generateToken(user))
+            .role(user.getRole())
             .build();
     }
 }

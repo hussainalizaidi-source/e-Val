@@ -299,7 +299,7 @@
 
         // Fetch teachers
         async function fetchTeachers() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('jwtToken');
             if (!token) {
                 showNotification('Please log in to continue', true);
                 window.location.href = '/login.html';
@@ -338,7 +338,7 @@
 
         // Fetch classes
         async function fetchClasses() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('jwtToken');
             if (!token) {
                 showNotification('Please log in to continue', true);
                 window.location.href = '/login.html';
@@ -399,7 +399,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
                     },
                     body: JSON.stringify(classData)
                 });
@@ -442,7 +442,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
                     },
                     body: JSON.stringify(teacherEmail) // Send email directly as a JSON string
                 });
@@ -494,7 +494,7 @@
 
         // Sign out
         function signOut() {
-            localStorage.removeItem('token');
+            localStorage.removeItem('jwtToken');
             window.location.href = '/login.html';
         }
 

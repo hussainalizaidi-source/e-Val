@@ -16,12 +16,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
     private final UserRepository userRepository;
 
-    @GetMapping
+    @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getUsersByRole(@RequestParam String role) {
         Role roleEnum = Role.valueOf(role.toUpperCase());
@@ -30,6 +30,20 @@ public class UserController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/students/rollno/{rollNumber}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<User> getStudentByRollNumber(@PathVariable String rollNumber) {
+        User student = userRepository.findByRollNo(rollNumber)
+                .filter(user -> user.getRole() == Role.STUDENT)
+                .orElse(null);
+        if (student == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+        return ResponseEntity.ok(student);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleExceptions(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

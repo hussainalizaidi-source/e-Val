@@ -34,18 +34,13 @@
 
         .input-field {
             display: block;
-            width: 48%;
+            width: 100%;
             padding: 12px;
             margin-bottom: 20px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-sizing: border-box;
-            float: left;
-        }
-
-        .input-field.full-width {
-            width: 100%; /* For the student roll number field */
         }
 
         .button-container {
@@ -63,7 +58,7 @@
             background-color: #007bff;
             color: white;
             transition: background-color 0.3s ease;
-            width: 45%; /* To make buttons side by side */
+            width: 45%;
         }
 
         .action-button:hover {
@@ -90,14 +85,13 @@
 
         .select-field {
             display: block;
-            width: 48%;
+            width: 100%;
             padding: 12px;
             margin-bottom: 20px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-sizing: border-box;
-            float: left;
         }
     </style>
 </head>
@@ -107,7 +101,7 @@
         <h1 class="assign-title">Assign Student</h1>
 
         <!-- Roll Number Input -->
-        <input type="text" class="input-field full-width" id="rollNumber" placeholder="Enter Roll Number">
+        <input type="text" class="input-field" id="rollNumber" placeholder="Enter Roll Number (e.g., STD-0001)">
 
         <!-- Button Container with Search and Back Button -->
         <div class="button-container">
@@ -124,19 +118,9 @@
             <p id="studentName"></p>
             <p id="studentEmail"></p>
 
-            <!-- Class and Section Select -->
+            <!-- Class Select -->
             <select class="select-field" id="classSelect">
                 <option value="" disabled selected>Select Class</option>
-                <option value="Math">Math</option>
-                <option value="Science">Science</option>
-                <option value="History">History</option>
-            </select>
-
-            <select class="select-field" id="sectionSelect">
-                <option value="" disabled selected>Select Section</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
             </select>
 
             <!-- Assign Button -->
@@ -145,51 +129,195 @@
     </div>
 
     <script>
-        // Simulating fetching student details from the database based on roll number
-        function fetchStudentDetails(rollNumber) {
-            // Simulate fetching data from database (this would be an AJAX call in a real application)
-            const studentsDB = {
-                "0827": { name: "Muhammad Ali", email: "ali@example.com" },
-                "1234": { name: "John Doe", email: "john@example.com" }
-            };
-            return studentsDB[rollNumber] || null;
+        // Get JWT token from localStorage
+        const getJwtToken = () => {
+            const token = localStorage.getItem('jwtToken');
+            console.log('Retrieved JWT token:', token);
+            if (!token) {
+                alert('Please log in to continue.');
+                window.location.href = '/login.html';
+                return null;
+            }
+            console.log('Token parts:', token.split('.'));
+            return token;
+        };
+
+        // Fetch student details by roll number
+        async function fetchStudentDetails(rollNumber) {
+            const token = getJwtToken();
+            if (!token) return null;
+
+            try {
+                console.log('Fetching student details for rollNo:', rollNumber);
+                const response = await fetch(`http://localhost:8080/api/students/rollno/${rollNumber}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Fetch student response status:', response.status);
+                console.log('Fetch student response headers:', [...response.headers.entries()]);
+                if (!response.ok) {
+                    let errorMessage = 'Failed to fetch student details';
+                    if (response.status === 401) {
+                        errorMessage = 'Unauthorized: Invalid or missing token';
+                    } else if (response.status === 403) {
+                        errorMessage = 'Access denied: Insufficient permissions';
+                    } else if (response.status === 404) {
+                        errorMessage = 'Student not found';
+                    }
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                    } catch {
+                        const errorText = await response.text();
+                        console.log('Fetch student error response:', errorText);
+                    }
+                    throw new Error(errorMessage);
+                }
+                const student = await response.json();
+                console.log('Student data:', student);
+                return student;
+            } catch (error) {
+                console.error('Fetch student error:', error.message);
+                alert(`Error: ${error.message}`);
+                return null;
+            }
+        }
+
+        // Fetch available classes
+        async function fetchAvailableClasses() {
+            const token = getJwtToken();
+            if (!token) return;
+
+            try {
+                console.log('Fetching available classes');
+                const response = await fetch('http://localhost:8080/api/classes/available', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Fetch classes response status:', response.status);
+                console.log('Fetch classes response headers:', [...response.headers.entries()]);
+                if (!response.ok) {
+                    let errorMessage = 'Failed to fetch available classes';
+                    if (response.status === 401) {
+                        errorMessage = 'Unauthorized: Invalid or missing token';
+                    } else if (response.status === 403) {
+                        errorMessage = 'Access denied: Insufficient permissions';
+                    }
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.log('Fetch classes error data:', errorData);
+                    } catch {
+                        const errorText = await response.text();
+                        console.log('Fetch classes error response:', errorText);
+                    }
+                    throw new Error(errorMessage);
+                }
+                const classes = await response.json();
+                console.log('Classes data:', classes);
+                const classSelect = document.getElementById('classSelect');
+                classSelect.innerHTML = '<option value="" disabled selected>Select Class</option>';
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls.id;
+                    option.textContent = `${cls.name} (Section: ${cls.section}, Capacity: ${cls.maxCapacity - (cls.students ? cls.students.length : 0)} left)`;
+                    classSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Fetch classes error:', error.message);
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Assign student to class
+        async function assignStudent(classId, rollNumber) {
+            const token = getJwtToken();
+            if (!token) return null;
+
+            const requestBody = { rollNo: rollNumber };
+            try {
+                console.log('Assigning student to classId:', classId, 'with body:', requestBody);
+                const response = await fetch(`http://localhost:8080/api/classes/${classId}/assign-student`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                console.log('Assign student response status:', response.status);
+                console.log('Assign student response headers:', [...response.headers.entries()]);
+                if (!response.ok) {
+                    let errorMessage = 'Failed to assign student';
+                    if (response.status === 401) {
+                        errorMessage = 'Unauthorized: Invalid or missing token';
+                    } else if (response.status === 403) {
+                        errorMessage = 'Access denied: Insufficient permissions';
+                    } else if (response.status === 400) {
+                        errorMessage = 'Invalid request or class not assigned to teacher';
+                    }
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.log('Assign student error data:', errorData);
+                    } catch {
+                        const errorText = await response.text();
+                        console.log('Assign student error response:', errorText);
+                    }
+                    throw new Error(errorMessage);
+                }
+                const result = await response.json();
+                console.log('Assign student result:', result);
+                return result;
+            } catch (error) {
+                console.error('Assign student error:', error.message);
+                alert(`Error: ${error.message}`);
+                return null;
+            }
         }
 
         // Handle Search Button Click
-        document.getElementById('searchBtn').addEventListener('click', function () {
-            const rollNumber = document.getElementById('rollNumber').value;
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            const rollNumber = document.getElementById('rollNumber').value.trim();
             if (!rollNumber) {
                 alert("Please enter a roll number.");
                 return;
             }
 
-            const student = fetchStudentDetails(rollNumber);
+            const student = await fetchStudentDetails(rollNumber);
             if (student) {
                 document.getElementById('studentName').textContent = `Name: ${student.name}`;
                 document.getElementById('studentEmail').textContent = `Email: ${student.email}`;
-                document.getElementById('detailsSection').style.display = 'block'; // Show details section
+                document.getElementById('detailsSection').style.display = 'block';
+                await fetchAvailableClasses();
             } else {
-                alert("Student not found.");
-                document.getElementById('detailsSection').style.display = 'none'; // Hide details section
+                document.getElementById('detailsSection').style.display = 'none';
             }
         });
 
         // Handle Assign Button Click
-        document.getElementById('assignBtn').addEventListener('click', function () {
-            const selectedClass = document.getElementById('classSelect').value;
-            const selectedSection = document.getElementById('sectionSelect').value;
+        document.getElementById('assignBtn').addEventListener('click', async () => {
+            const classId = document.getElementById('classSelect').value;
+            const rollNumber = document.getElementById('rollNumber').value.trim();
 
-            if (!selectedClass || !selectedSection) {
-                alert("Please select both class and section.");
+            if (!classId) {
+                alert("Please select a class.");
                 return;
             }
 
-            alert(`Student Assigned!\nClass: ${selectedClass}\nSection: ${selectedSection}`);
+            const result = await assignStudent(classId, rollNumber);
+            if (result) {
+                alert(`Student assigned to class: ${result.name} (Section: ${result.section})`);
+                document.getElementById('detailsSection').style.display = 'none';
+                document.getElementById('rollNumber').value = '';
+            }
         });
 
         // Handle Back Button Click
-        document.getElementById('backBtn').addEventListener('click', function () {
-            window.location.href = 'teacherdash.html'; // Go back to teacher dashboard or desired page
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'teacherdash.html';
         });
     </script>
 

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthRequest {
      @NotBlank
-    private String name;  // Must match 'fullName' in your frontend
+    private String name; 
     
     @Email
     @NotBlank

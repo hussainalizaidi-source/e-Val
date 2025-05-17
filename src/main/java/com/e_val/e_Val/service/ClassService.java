@@ -14,12 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ClassService {
     private final ClassRepository classRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final Logger log = LoggerFactory.getLogger(ClassService.class);
 
     public ClassResponse createClass(ClassCreationRequest request, String adminEmail) {
@@ -87,6 +89,34 @@ public class ClassService {
             throw new RuntimeException("Class capacity exceeded");
         }
 
+        if (classEntity.getStudents().contains(student)) {
+            throw new RuntimeException("Student already assigned to this class");
+        }
+
+        classEntity.getStudents().add(student);
+        log.info("Saving updated class: {}", classEntity);
+        return mapToResponse(classRepository.save(classEntity));
+    }
+
+    @Transactional
+    public ClassResponse assignStudentByRollNo(Long classId, String rollNo) {
+        log.info("Assigning student with roll_no {} to class ID {}", rollNo, classId);
+
+        Class classEntity = classRepository.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found: ID " + classId));
+
+        User student = userRepository.findByRollNo(rollNo)
+                .filter(u -> u.getRole() == Role.STUDENT)
+                .orElseThrow(() -> new RuntimeException("Student not found with roll_no: " + rollNo));
+
+        if (classEntity.getStudents().size() >= classEntity.getMaxCapacity()) {
+            throw new RuntimeException("Class capacity exceeded");
+        }
+
+        if (classEntity.getStudents().contains(student)) {
+            throw new RuntimeException("Student already assigned to this class");
+        }
+
         classEntity.getStudents().add(student);
         log.info("Saving updated class: {}", classEntity);
         return mapToResponse(classRepository.save(classEntity));
@@ -103,6 +133,26 @@ public class ClassService {
                 .filter(u -> u.getRole() == Role.TEACHER)
                 .orElseThrow(() -> new RuntimeException("Teacher not found: " + teacherEmail));
         return classRepository.findByTeacher(teacher);
+    }
+
+    public List<Class> getClassesByStudent(String email) {
+        log.info("Fetching classes for student: {}", email);
+        User student = userService.findByEmail(email)
+                .filter(u -> u.getRole() == Role.STUDENT)
+                .orElseThrow(() -> new RuntimeException("Student not found: " + email));
+        return classRepository.findAll().stream()
+                .filter(cls -> cls.getStudents().contains(student))
+                .collect(Collectors.toList());
+    }
+
+    public List<Class> getAvailableClassesByTeacher(String teacherEmail) {
+        log.info("Fetching available classes for teacher: {}", teacherEmail);
+        User teacher = userRepository.findByEmail(teacherEmail.trim().toLowerCase())
+                .filter(u -> u.getRole() == Role.TEACHER)
+                .orElseThrow(() -> new RuntimeException("Teacher not found: " + teacherEmail));
+        return classRepository.findByTeacher(teacher).stream()
+                .filter(c -> c.getStudents().size() < c.getMaxCapacity())
+                .collect(Collectors.toList());
     }
 
     private void validateClassCreation(ClassCreationRequest request) {

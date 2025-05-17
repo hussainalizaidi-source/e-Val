@@ -1,9 +1,11 @@
 package com.e_val.e_Val.controller;
 
 import com.e_val.e_Val.model.Quiz;
+import com.e_val.e_Val.model.QuizAttempt;
 import com.e_val.e_Val.model.User;
 import com.e_val.e_Val.model.dto.QuizAssignmentRequest;
 import com.e_val.e_Val.model.dto.QuizCreationRequest;
+import com.e_val.e_Val.model.dto.QuizSubmissionRequest;
 import com.e_val.e_Val.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,6 +48,29 @@ public class QuizController {
     public ResponseEntity<Quiz> assignQuiz(@RequestBody QuizAssignmentRequest request,
                                           @AuthenticationPrincipal User teacher) {
         return ResponseEntity.ok(quizService.assignQuiz(request, teacher.getEmail()));
+    }
+    @GetMapping("/{quizId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Quiz> getQuiz(@PathVariable Long quizId, @AuthenticationPrincipal User student) {
+        Quiz quiz = quizService.getQuizById(quizId, student.getEmail());
+        return ResponseEntity.ok(quiz);
+    }
+
+    @PostMapping("/{quizId}/submit")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<QuizAttempt> submitQuiz(
+            @PathVariable Long quizId,
+            @RequestBody QuizSubmissionRequest submission,
+            @AuthenticationPrincipal User student) {
+        QuizAttempt attempt = quizService.submitQuiz(quizId, submission, student.getEmail());
+        return ResponseEntity.ok(attempt);
+    }
+    
+    @GetMapping("/available")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<Quiz>> getAvailableQuizzes(@AuthenticationPrincipal User student) {
+        List<Quiz> quizzes = quizService.getAvailableQuizzes(student.getEmail());
+        return ResponseEntity.ok(quizzes);
     }
 
     @ExceptionHandler(Exception.class)

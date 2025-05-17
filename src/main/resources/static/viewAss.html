@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #1a73e8;
+            font-size: 1.2rem;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            background: #e0e7ff;
+            color: #1a73e8;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .assignment-card {
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            background: linear-gradient(145deg, #ffffff, #f8faff);
+            border-left: 4px solid #1a73e8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .assignment-title {
+            font-size: 1.2rem;
+            color: #1a293b;
+        }
+
+        .assignment-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .assignment-card:hover::after {
+            opacity: 1;
+        }
+
+        .due-date {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status.done {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status.missed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .assignment-details {
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+
+        .days-left {
+            font-size: 0.9rem;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e7ff;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #1a73e8, #0d47a1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .subtasks {
+            margin-top: 1rem;
+            padding-left: 1rem;
+        }
+
+        .subtask {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            color: #4b5563;
+        }
+
+        .subtask-check {
+            accent-color: #1a73e8;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <a href="dashboard.html" class="back-btn">←</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Your Assignments</h1>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="tab active" onclick="filterAssignments('all')">All</button>
+            <button class="tab" onclick="filterAssignments('done')">Done</button>
+            <button class="tab" onclick="filterAssignments('missed')">Missed</button>
+        </div>
+
+        <div id="assignments-container">
+            <!-- Assignment cards will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Updated assignments array with progress and subtasks
+        const assignments = [
+            {
+                title: "Math Algebra Quiz",
+                dueDate: "2023-12-15",
+                status: "done",
+                description: "Complete chapter 5 exercises on quadratic equations",
+                progress: 100,
+                subtasks: [
+                    { name: "Solve equations", completed: true },
+                    { name: "Verify solutions", completed: true }
+                ]
+            },
+            {
+                title: "History Essay",
+                dueDate: "2023-12-18",
+                status: "pending",
+                description: "Write 1000-word essay on World War II causes",
+                progress: 45,
+                subtasks: [
+                    { name: "Research", completed: true },
+                    { name: "Draft", completed: true },
+                    { name: "Final Edit", completed: false }
+                ]
+            },
+            {
+                title: "Science Project",
+                dueDate: "2023-12-10",
+                status: "missed",
+                description: "Submit lab report on chemical reactions",
+                progress: 30,
+                subtasks: [
+                    { name: "Experiments", completed: true },
+                    { name: "Analysis", completed: false }
+                ]
+            }
+        ];
+
+        // Updated createAssignmentCard function with progress and subtasks
+        function createAssignmentCard(assignment) {
+            const card = document.createElement('div');
+            card.className = 'assignment-card';
+            
+            const dueDate = new Date(assignment.dueDate);
+            const today = new Date();
+            const timeDiff = dueDate.getTime() - today.getTime();
+            const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            card.innerHTML = `
+                <div class="assignment-header">
+                    <h3 class="assignment-title">${assignment.title}</h3>
+                    <span class="status ${assignment.status}">${
+                        assignment.status === 'done' ? 'Completed' : 
+                        assignment.status === 'missed' ? 'Missed' : 'Pending'
+                    }</span>
+                </div>
+                <p class="assignment-details">${assignment.description}</p>
+
+                ${assignment.progress ? `
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${assignment.progress}%"></div>
+                </div>` : ''}
+
+                ${assignment.subtasks ? `
+                <div class="subtasks">
+                    ${assignment.subtasks.map(subtask => `
+                        <div class="subtask">
+                            <input type="checkbox" ${subtask.completed ? 'checked' : ''} 
+                                   class="subtask-check" disabled>
+                            ${subtask.name}
+                        </div>
+                    `).join('')}
+                </div>` : ''}
+
+                <div class="assignment-footer">
+                    <span class="due-date">Due: ${dueDate.toDateString()}</span>
+                    ${daysLeft > 0 ? `<span class="days-left">${daysLeft} days left</span>` : ''}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function filterAssignments(filter) {
+            document.querySelectorAll('.tab').forEach(tab => 
+                tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const container = document.getElementById('assignments-container');
+            container.innerHTML = '';
+
+            const filtered = assignments.filter(assignment => 
+                filter === 'all' ? true : assignment.status === filter
+            );
+
+            filtered.forEach(assignment => {
+                container.appendChild(createAssignmentCard(assignment));
+            });
+        }
+
+
+        // Initial load
+        filterAssignments('all');
+    </script>
+</body>
+</html>

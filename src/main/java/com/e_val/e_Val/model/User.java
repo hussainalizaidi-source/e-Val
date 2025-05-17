@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.persistence.*; // Use jakarta.persistence.* (not javax)
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -19,9 +19,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Data
-@Builder // Add this
-@NoArgsConstructor // Add this
-@AllArgsConstructor // Add this
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
@@ -29,14 +29,20 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String name; // Full name of the user
+
     @Column(unique = true)
     @Email
     private String email;
+
     private String password;
+
     private String resetToken;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(unique = true, nullable = true)
+    private String rollNo; // New field for student roll number
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,6 +57,7 @@ public class User implements UserDetails {
     public String getUsername() {
         return email; // Use email as the username
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

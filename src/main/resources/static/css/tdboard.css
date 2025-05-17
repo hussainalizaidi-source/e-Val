@@ -1,268 +1,449 @@
+/* tdboard.css - Enhanced Teacher Dashboard */
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f0f2f5;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Notification Bar */
+.notification-bar {
+  position: fixed;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3b82f6;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  font-weight: 500;
+}
+
+/* Header Styles */
+header {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 20px rgba(30, 64, 175, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-pic {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.teacher-info h2 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Search Container */
+.search-container {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  transition: all 0.3s ease;
+  width: 500px;
+  backdrop-filter: blur(4px);
+}
+
+.search-container:focus-within {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-button {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.search-button:hover {
+  transform: scale(1.1);
+}
+
+/* Notification Button */
+.notification-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  padding: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.notification-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(15deg);
+}
+
+.noti-icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+/* Main Content Layout */
+.main-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 999;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Logo Container */
+.logo-container {
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.logo-text {
+  color: #1d4ed8;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .logo-text {
+  font-size: 1.4rem;
+}
+
+/* Clock Styles */
+.clock {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 0.8rem;
+  border-radius: 12px;
+  margin: 1rem 0;
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Class Boxes */
+.class-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.class-box {
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.class-box:hover {
+  background: rgba(59, 130, 246, 0.12);
+  transform: translateX(6px);
+}
+
+.class-box::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: #1d4ed8;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.class-box:hover::before {
+  transform: scaleY(1);
+}
+
+.class-details {
+  display: none;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.student-count {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.show-all-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.show-all-btn:hover {
+  background: #1d4ed8;
+  color: white;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  background: #f8fafc;
+}
+
+.grid-button {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.grid-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(30, 64, 175, 0.1);
+  border-color: #bfdbfe;
+}
+
+.grid-icon {
+  font-size: 2.2rem;
+  transition: transform 0.3s ease;
+}
+
+.grid-button:hover .grid-icon {
+  transform: scale(1.1);
+}
+
+.grid-label {
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+}
+
+.hover-effect {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #3b82f6;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.grid-button:hover .hover-effect {
+  transform: scaleX(1);
+}
+
+/* Updated Sign Out Button */
+.signout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 20px auto 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.signout-btn:hover {
+  background-color: rgba(29, 78, 216, 0.1);
+}
+
+.signout-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(29, 78, 216, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.signout-btn:hover::before {
+  opacity: 1;
+}
+
+.signout-icon {
+  width: 25px;
+  height: 25px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: invert(39%) sepia(90%) saturate(7484%) hue-rotate(230deg) brightness(97%) contrast(101%);
+  position: relative;
+  z-index: 1;
+}
+
+.signout-btn:hover .signout-icon {
+  transform: rotate(360deg);
+  filter: invert(23%) sepia(93%) saturate(2039%) hue-rotate(218deg) brightness(96%) contrast(93%);
+}
+
+.sidebar-calendar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Toggle Button */
+.toggle-btn {
+  background: rgba(59, 130, 246, 0.1);
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: rotate(90deg);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .search-container {
+    width: 400px;
   }
 
+  .dashboard-content {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
   header {
-    background: white;
-    padding: 0.5rem 1rem; 
-    border-bottom: 3px solid #1a73e8;
-    display: flex;
-    align-items: center; 
-    justify-content: left;
-    width: 97.6%;
-    margin: 0 auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
   }
-  
-  .profile-container {
-    display: flex;
-    align-items: center; 
-    gap: 1rem; 
-  }
-  
-  .profile-pic {
-    width: 70px; 
-    height: 70px;
-    border-radius: 50%;
-    border: 3px solid #1a73e8;
-    background: white;
-    object-fit: cover;
-  }
-  
-  .teacher-info h2 {
-    margin: 0;
-    color: #1a73e8;
-    font-size: 1.5rem;
-  }
-
-  .notification-btn {
-    position: absolute;
-    margin-top: 1rem;
-    right: 1.5rem;
-    background: #ffffff;
-    color: white;
-    padding: 0.6rem;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    text-decoration: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: background 0.3s, transform 0.3s;
-  }
-  
-  .notification-btn:hover {
-    background: #78797a;
-    transform: scale(1.1);
-  }    
 
   .search-container {
-    display: flex;
-    align-items: center;
-    margin-top: 1rem;
-
-    position: absolute;
-    right: 23rem;
-    width: 550px; /* You can adjust width */
-  }
-  
-  .search-input {
     width: 100%;
-    padding: 0.5rem 1rem;
-    border: 2px solid #c9c5c5;
-    border-radius: 20px 0 0 20px;
-    outline: none;
-    font-size: 1rem;
-  }
-  
-  .search-button {
-    background: #f7f7f7;
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0 25px 25px 0;
-    cursor: pointer;
-    font-size: 1.2rem;
-  }
-  .search-button:hover {
-    background: #1558b0;
-  }
-  
-  
-  .main-content {
-    flex: 1;
-    display: flex;
-    height: 100%;
+    position: static;
   }
 
   .sidebar {
-    background: white;
-    width: 200px;
-    transition: width 0.3s;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1rem;
-    border-right: 1px solid #ddd;
-    overflow-x: hidden;
+    position: fixed;
+    z-index: 1001;
+    height: 100vh;
   }
 
-  .sidebar.collapsed {
-    width: 30px;
-  }
-
-  .toggle-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin-bottom: 1rem;
-    align-self: flex-end;
-    color: #1a73e8;
-  }
-
-  .toggle-btn:hover {
-    color: white;
-    background: #1558b0;
-    border-radius: 50%;
-    transform: scale(1.1);
-  }
-
-  .logo-container {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .logo-text {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #1a73e8;
-    margin: 0;
-  }
-  
-
-  .clock {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    color: #1a73e8;
-    margin-bottom: 2rem;
-    white-space: nowrap;
-  }
-
-  .class-box {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 0.8rem;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-    color: #1a73e8;
-  }
-
-  .class-box:hover {
-    background: #1a73e8;
-    color: white;
-  }
-
-  .class-details {
-    display: none;
-    margin-top: 0.5rem;
-  }
-
-  .show-all-btn {
-    margin-top: 0.5rem;
-    background: #1a73e8;
-    color: white;
-    padding: 0.3rem 0.7rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .show-all-btn:hover {
-    background: #1558b0;
-  }
-
-  .signout-btn {
-    margin-top: 2rem;
-    background: #f9f9f9;
-    color: white;
-    padding: 0.6rem;
-    border: none;
-    border-radius: 50%; /* <-- Makes it perfectly round */
-    cursor: pointer;
-    width: 40px; /* <-- smaller width */
-    height: 40px; /* <-- height same as width for circle */
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-self: center; /* center it horizontally inside sidebar */
-    transition: background 0.3s, width 0.3s, height 0.3s;
-  }
-  
-  .signout-btn:hover {
-    background: #e9e7e7;
-  }
-
-  .signout-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-  }
-
-  .signout-btn:hover .signout-icon {
-    transform: rotate(360deg);
-  }
-
-  .noti-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-  }
-  
   .dashboard-content {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(150px, 1fr));
-    gap: 1rem;
-    padding: 2rem;
-    align-content: start;
+    margin-left: 80px;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+    margin-left: 0;
+    padding: 1rem;
   }
 
   .grid-button {
-    background: white;
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #1a73e8;
-    transition: background 0.3s, color 0.3s;
-    min-height: 100px;
   }
 
-  .grid-button:hover {
-    background: #1a73e8;
-    color: white;
+  .sidebar.collapsed {
+    width: 0;
+    padding: 0;
   }
-
-  /* Hide text when sidebar collapsed */
-  .sidebar.collapsed .class-box strong,
-  .sidebar.collapsed .class-details,
-  .sidebar.collapsed .clock,
-  .sidebar.collapsed .show-all-btn {
-    display: none;
-  }
+}

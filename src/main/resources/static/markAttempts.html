@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Quiz Attempts</title>
+  <link rel="stylesheet" href="/css/tdboard.css">
+  <style>
+    .attempt-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .attempt-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .attempt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .attempt-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #1e293b;
+    }
+
+    .answer-list {
+      margin: 1rem 0;
+    }
+
+    .answer-item {
+      padding: 0.8rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .answer-item:last-child {
+      border-bottom: none;
+    }
+
+    .answer-item p {
+      margin: 0.5rem 0;
+    }
+
+    .score-form {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .score-input {
+      width: 100px;
+      padding: 0.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 4px;
+    }
+
+    .submit-score-btn {
+      padding: 0.5rem 1rem;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .submit-score-btn:hover {
+      background: #2563eb;
+    }
+
+    .no-attempts {
+      text-align: center;
+      font-size: 1rem;
+      color: #64748b;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 768px) {
+      .attempt-card {
+        padding: 1rem;
+      }
+
+      .score-form {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="attempt-container">
+    <h2>Mark Quiz Attempts</h2>
+    <div id="attemptList"></div>
+  </div>
+
+  <script>
+    // Get JWT token
+    const getJwtToken = () => {
+      const token = localStorage.getItem('jwtToken');
+      console.log('Retrieved JWT token:', token ? token.substring(0, 20) + '...' : null);
+      if (!token) {
+        alert('Please log in to continue.');
+        window.location.href = '/login.html';
+        return null;
+      }
+      return token;
+    };
+
+    // Fetch quiz attempts
+    async function fetchAttempts() {
+      const token = getJwtToken();
+      if (!token) return;
+
+      try {
+        console.log('Fetching quiz attempts');
+        const response = await fetch('http://localhost:8080/api/quiz-attempts', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log('Fetch attempts response status:', response.status);
+        if (!response.ok) {
+          let errorMessage = 'Failed to fetch attempts';
+          if (response.status === 401) {
+            errorMessage = 'Unauthorized: Invalid or missing token';
+          } else if (response.status === 403) {
+            errorMessage = 'Access denied: Insufficient permissions';
+          }
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || errorMessage;
+            console.log('Fetch attempts error data:', errorData);
+          } catch {
+            const errorText = await response.text();
+            console.log('Fetch attempts error response:', errorText);
+          }
+          throw new Error(errorMessage);
+        }
+        const attempts = await response.json();
+        console.log('Attempts data:', JSON.stringify(attempts, null, 2));
+        renderAttempts(attempts);
+      } catch (error) {
+        console.error('Fetch attempts error:', error.message);
+        alert(`Error: ${error.message}`);
+        document.getElementById('attemptList').innerHTML = 
+          '<div class="no-attempts">Failed to load attempts.</div>';
+      }
+    }
+
+    // Render quiz attempts
+    function renderAttempts(attempts) {
+      const container = document.getElementById('attemptList');
+      if (!attempts || attempts.length === 0) {
+        container.innerHTML = '<div class="no-attempts">No quiz attempts available.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      attempts.forEach(attempt => {
+        const attemptCard = document.createElement('div');
+        attemptCard.className = 'attempt-card';
+        
+        let answersHtml = '';
+        attempt.answers.forEach(answer => {
+          let answerText = '';
+          if (answer.question.type === 'MCQ') {
+            const option = answer.answerIndex !== null && answer.question.options && answer.question.options[answer.answerIndex]
+              ? answer.question.options[answer.answerIndex]
+              : 'No answer';
+            answerText = `Selected: ${option}`;
+          } else {
+            answerText = `Answer: ${answer.answerText || 'No answer'}`;
+          }
+          answersHtml += `
+            <div class="answer-item">
+              <p><strong>Question:</strong> ${answer.question.questionText}</p>
+              <p><strong>Type:</strong> ${answer.question.type}</p>
+              <p><strong>${answerText}</strong></p>
+              <p><strong>Marks:</strong> ${answer.question.marks}</p>
+            </div>
+          `;
+        });
+
+        attemptCard.innerHTML = `
+          <div class="attempt-header">
+            <h3>Attempt by ${attempt.student.name} for ${attempt.quiz.title}</h3>
+            <span>Attempt Date: ${new Date(attempt.attemptDate).toLocaleString()}</span>
+          </div>
+          <p><strong>Student Email:</strong> ${attempt.student.email}</p>
+          <p><strong>Current Score:</strong> ${attempt.score || 0} / ${attempt.quiz.totalMarks}</p>
+          <div class="answer-list">${answersHtml}</div>
+          <form class="score-form" onsubmit="submitScore(event, ${attempt.id})">
+            <label for="score-${attempt.id}">Score:</label>
+            <input type="number" id="score-${attempt.id}" class="score-input" min="0" max="${attempt.quiz.totalMarks}" required>
+            <button type="submit" class="submit-score-btn">Submit Score</button>
+          </form>
+        `;
+        container.appendChild(attemptCard);
+      });
+    }
+
+    // Submit score
+    async function submitScore(event, attemptId) {
+      event.preventDefault();
+      const token = getJwtToken();
+      if (!token) return;
+
+      const scoreInput = document.getElementById(`score-${attemptId}`);
+      const score = parseInt(scoreInput.value);
+
+      try {
+        console.log(`Submitting score ${score} for attempt ID ${attemptId}`);
+        const response = await fetch(`http://localhost:8080/api/quiz-attempts/${attemptId}/score`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ score })
+        });
+        console.log('Submit score response status:', response.status);
+        if (!response.ok) {
+          let errorMessage = 'Failed to submit score';
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || errorMessage;
+            console.log('Submit score error data:', errorData);
+          } catch {
+            const errorText = await response.text();
+            console.log('Submit score error response:', errorText);
+          }
+          throw new Error(errorMessage);
+        }
+        alert('Score submitted successfully!');
+        fetchAttempts(); // Refresh attempts
+      } catch (error) {
+        console.error('Submit score error:', error.message);
+        alert(`Error: ${error.message}`);
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', fetchAttempts);
+  </script>
+</body>
+</html>

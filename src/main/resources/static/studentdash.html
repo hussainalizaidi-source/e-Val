@@ -68,9 +68,9 @@
         <span class="menu-icon">🔔</span>
         <span class="menu-text">Notifications</span>
       </a>
-      <a href="private_chat.html" class="menu-item">
-        <span class="menu-icon">💬</span>
-        <span class="menu-text">Chat</span>
+      <a href="assignments.html" class="menu-item">
+        <span class="menu-icon">📚</span>
+        <span class="menu-text">Assignments</span>
       </a>
     </div>
   </nav>
@@ -81,16 +81,48 @@
 
 <main class="main-content">
   <section class="dashboard-content">
-    <div class="grid-button" onclick="location.href='available_classes.html'">Browse Classes</div>
+    <div class="grid-button" onclick="showTimetable()">
+      <div class="grid-icon">📅</div>
+      <div class="grid-label">Timetable</div>
+    </div>
     <div class="grid-button" onclick="location.href='my_classes.html'">My Classes</div>
     <div class="grid-button" onclick="location.href='lecture_materials.html'">Lecture Materials</div>
-    <div class="grid-button" onclick="location.href='quiz_list.html'">Quizzes</div>
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <h3>Available Quizzes</h3>
+        <div class="quiz-filter">
+          <select id="courseFilter">
+            <option value="all">All Classes</option>
+            <!-- Classes will be dynamically populated -->
+          </select>
+        </div>
+      </div>
+      <div class="quiz-list" id="quizList">
+        <div class="no-quizzes">Loading quizzes...</div>
+      </div>
+    </div>
     <div class="grid-button" onclick="location.href='performance_tracker.html'">Performance Tracker</div>
     <div class="grid-button" onclick="location.href='notifications.html'">Notifications</div>
-    <div class="grid-button" onclick="location.href='private_chat.html'">Private Chat</div>
+    <div class="grid-button" onclick="location.href='assignments.html'">
+      <div class="grid-icon">📚</div>
+      <div class="grid-label">View Assignments</div>
+      <div class="assignment-counter">3 New</div>
+    </div>
     <div class="grid-button" onclick="location.href='edit_profile.html'">Edit Profile</div>
   </section>
 </main>
+
+<div id="timetableModal" class="modal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h2>Weekly Timetable</h2>
+          <button class="close-btn" onclick="closeTimetable()">×</button>
+      </div>
+      <div class="timetable-container" id="timetable">
+          <!-- Timetable will be generated here -->
+      </div>
+  </div>
+</div>
 
 <script>
 // Live Clock
@@ -121,11 +153,240 @@ function toggleSidebar() {
   }
 }
 
-// Dummy SignOut
-function signOut() {
-  alert('Signing out...');
-  // Redirect or perform signout actions here
+// Timetable Data (unchanged)
+const timetableData = {
+  "Mon": [
+      { time: "09:00-10:30", subject: "Mathematics", room: "B-203", instructor: "Prof. Sharma" },
+      { time: "11:00-12:30", subject: "Physics", room: "Lab-3", instructor: "Dr. Gupta" }
+  ],
+  "Tue": [
+      { time: "10:00-11:30", subject: "Chemistry", room: "C-102", instructor: "Dr. Singh" }
+  ],
+  "Wed": [
+      { time: "09:30-11:00", subject: "Computer Science", room: "Comp Lab", instructor: "Ms. Kapoor" }
+  ],
+  "Thu": [
+      { time: "14:00-15:30", subject: "English", room: "A-301", instructor: "Mrs. Das" }
+  ],
+  "Fri": [
+      { time: "10:00-12:00", subject: "Mathematics", room: "B-203", instructor: "Prof. Sharma" }
+  ]
+};
+
+function showTimetable() {
+  const modal = document.getElementById('timetableModal');
+  modal.style.display = 'block';
+  generateTimetable();
 }
+
+function closeTimetable() {
+  document.getElementById('timetableModal').style.display = 'none';
+}
+
+function generateTimetable() {
+  const container = document.getElementById('timetable');
+  container.innerHTML = '';
+  
+  for (const [day, classes] of Object.entries(timetableData)) {
+      const dayColumn = document.createElement('div');
+      dayColumn.className = 'timetable-day';
+      dayColumn.innerHTML = `
+          <div class="timetable-header">${day}</div>
+          ${classes.map(cls => `
+              <div class="class-card">
+                  <div class="time-slot">${cls.time}</div>
+                  <div class="subject-name">${cls.subject}</div>
+                  <div class="class-details">
+                      ${cls.room}<br>
+                      ${cls.instructor}
+                  </div>
+              </div>
+          `).join('')}
+      `;
+      container.appendChild(dayColumn);
+  }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('timetableModal');
+  if (event.target === modal) {
+      closeTimetable();
+  }
+}
+
+// Get JWT token
+function getJwtToken() {
+  const token = localStorage.getItem('jwtToken');
+  console.log('Retrieved JWT token:', token);
+  if (!token) {
+    alert('Please log in to continue.');
+    window.location.href = '/login.html';
+    return null;
+  }
+  console.log('Token parts:', token.split('.'));
+  return token;
+}
+
+// Fetch enrolled classes
+async function fetchClasses() {
+  const token = getJwtToken();
+  if (!token) return [];
+
+  try {
+    console.log('Fetching enrolled classes');
+    const response = await fetch('http://localhost:8080/api/classes/my-classes', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    console.log('Fetch classes response status:', response.status);
+    if (!response.ok) {
+      let errorMessage = 'Failed to fetch classes';
+      if (response.status === 401) {
+        errorMessage = 'Unauthorized: Invalid or missing token';
+      } else if (response.status === 403) {
+        errorMessage = 'Access denied: Insufficient permissions';
+      }
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+        console.log('Fetch classes error data:', errorData);
+      } catch {
+        const errorText = await response.text();
+        console.log('Fetch classes error response:', errorText);
+      }
+      throw new Error(errorMessage);
+    }
+    const classes = await response.json();
+    console.log('Classes data:', classes);
+    return classes;
+  } catch (error) {
+    console.error('Fetch classes error:', error.message);
+    alert(`Error: ${error.message}`);
+    return [];
+  }
+}
+
+// Populate course filter
+async function populateCourseFilter() {
+  const classes = await fetchClasses();
+  const courseFilter = document.getElementById('courseFilter');
+  courseFilter.innerHTML = '<option value="all">All Classes</option>';
+  
+  classes.forEach(cls => {
+    const option = document.createElement('option');
+    option.value = cls.name;
+    option.textContent = cls.name;
+    courseFilter.appendChild(option);
+  });
+}
+
+// Fetch available quizzes
+async function fetchQuizzes() {
+  const token = getJwtToken();
+  if (!token) return [];
+
+  try {
+    console.log('Fetching available quizzes');
+    const response = await fetch('http://localhost:8080/api/quizzes/available', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    console.log('Fetch quizzes response status:', response.status);
+    if (!response.ok) {
+      let errorMessage = 'Failed to fetch quizzes';
+      if (response.status === 401) {
+        errorMessage = 'Unauthorized: Invalid or missing token';
+      } else if (response.status === 403) {
+        errorMessage = 'Access denied: Insufficient permissions';
+      }
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+        console.log('Fetch quizzes error data:', errorData);
+      } catch {
+        const errorText = await response.text();
+        console.log('Fetch quizzes error response:', errorText);
+      }
+      throw new Error(errorMessage);
+    }
+    const quizzes = await response.json();
+    console.log('Quizzes data:', quizzes);
+    return quizzes;
+  } catch (error) {
+    console.error('Fetch quizzes error:', error.message);
+    alert(`Error: ${error.message}`);
+    return [];
+  }
+}
+
+// Render quizzes
+async function renderQuizzes(filter = 'all') {
+  const quizList = document.getElementById('quizList');
+  quizList.innerHTML = '<div class="no-quizzes">Loading quizzes...</div>';
+
+  const quizzes = await fetchQuizzes();
+  quizList.innerHTML = '';
+
+  if (quizzes.length === 0) {
+    quizList.innerHTML = '<div class="no-quizzes">No available quizzes.</div>';
+    return;
+  }
+
+  const filteredQuizzes = quizzes.filter(quiz => 
+    filter === 'all' ? true : quiz.className === filter
+  );
+
+  filteredQuizzes.forEach(quiz => {
+    const quizCard = document.createElement('div');
+    quizCard.className = 'quiz-card';
+    
+    quizCard.innerHTML = `
+      <div class="quiz-info">
+        <div class="quiz-title">${quiz.title}</div>
+        <div class="quiz-meta">
+          <span>Class: ${quiz.className}</span>
+          <span>Due: ${new Date(quiz.endTime).toLocaleDateString()}</span>
+          <span>Duration: ${quiz.timeLimitMinutes || 30} mins</span>
+        </div>
+      </div>
+      <div class="quiz-status status-not-attempted">
+        Not Attempted
+      </div>
+      <div class="quiz-actions">
+        <button onclick="attemptQuiz(${quiz.id})">
+          Attempt
+        </button>
+      </div>
+    `;
+    
+    quizList.appendChild(quizCard);
+  });
+}
+
+// Attempt quiz
+function attemptQuiz(quizId) {
+  window.location.href = `attemptQuiz.html?quizId=${encodeURIComponent(quizId)}`;
+}
+
+// Sign out
+function signOut() {
+  localStorage.removeItem('jwtToken');
+  window.location.href = '/login.html';
+}
+
+// Event listeners
+document.getElementById('courseFilter').addEventListener('change', (e) => {
+  renderQuizzes(e.target.value);
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+  await populateCourseFilter();
+  await renderQuizzes();
+});
 </script>
 
 </body>

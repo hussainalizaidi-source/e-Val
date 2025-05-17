@@ -174,7 +174,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('token') // Adjust based on your auth setup
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwtToken') // Adjust based on your auth setup
                     },
                     body: JSON.stringify(quizData)
                 });

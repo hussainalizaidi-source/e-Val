@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Classes</title>
+    <link rel="stylesheet" href="/css/sdboard.css">
+    <style>
+        .class-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .no-classes {
+            text-align: center;
+            font-size: 1rem;
+            color: #64748b;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .class-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .class-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h3>My Classes</h3>
+            <div class="quiz-actions">
+                <button class="quiz-actions button" onclick="window.location.href='studentdash.html'">Back to Dashboard</button>
+            </div>
+        </div>
+        <div class="class-list" id="classList">
+            <!-- Classes will be dynamically populated here -->
+        </div>
+    </div>
+
+    <script>
+        // Get JWT token from localStorage
+        const getJwtToken = () => {
+            const token = localStorage.getItem('jwtToken');
+            console.log('Retrieved JWT token:', token);
+            if (!token) {
+                alert('Please log in to continue.');
+                window.location.href = '/login.html';
+                return null;
+            }
+            console.log('Token parts:', token.split('.'));
+            return token;
+        };
+
+        // Fetch student's classes
+        async function fetchMyClasses() {
+            const token = getJwtToken();
+            if (!token) return;
+
+            try {
+                console.log('Fetching my classes');
+                const response = await fetch('http://localhost:8080/api/classes/my-classes', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Fetch classes response status:', response.status);
+                console.log('Fetch classes response headers:', [...response.headers.entries()]);
+                if (!response.ok) {
+                    let errorMessage = 'Failed to fetch classes';
+                    if (response.status === 401) {
+                        errorMessage = 'Unauthorized: Invalid or missing token';
+                    } else if (response.status === 403) {
+                        errorMessage = 'Access denied: Insufficient permissions';
+                    } else if (response.status === 400) {
+                        errorMessage = 'Student not found';
+                    }
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.log('Fetch classes error data:', errorData);
+                    } catch {
+                        const errorText = await response.text();
+                        console.log('Fetch classes error response:', errorText);
+                    }
+                    throw new Error(errorMessage);
+                }
+                const classes = await response.json();
+                console.log('Classes data:', classes);
+                renderClasses(classes);
+            } catch (error) {
+                console.error('Fetch classes error:', error.message);
+                alert(`Error: ${error.message}`);
+                renderClasses([]);
+            }
+        }
+
+        // Render classes
+        function renderClasses(classes) {
+            const classList = document.getElementById('classList');
+            classList.innerHTML = '';
+
+            if (classes.length === 0) {
+                classList.innerHTML = '<div class="no-classes">No classes enrolled.</div>';
+                return;
+            }
+
+            classes.forEach(cls => {
+                const classCard = document.createElement('div');
+                classCard.className = 'quiz-card';
+                classCard.innerHTML = `
+                    <div class="quiz-info">
+                        <div class="quiz-title">${cls.name}</div>
+                        <div class="quiz-meta">
+                            <span>Code: ${cls.code}</span>
+                            <span>Section: ${cls.section}</span>
+                            <span>Teacher: ${cls.teacher ? cls.teacher.name : 'Unassigned'}</span>
+                            <span>Students: ${cls.students ? cls.students.length : 0}/${cls.maxCapacity}</span>
+                        </div>
+                    </div>
+                `;
+                classList.appendChild(classCard);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMyClasses();
+        });
+    </script>
+</body>
+</html>
